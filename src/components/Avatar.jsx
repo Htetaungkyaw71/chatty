@@ -14,11 +14,15 @@ const Avatar = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(
-        `${api}/${Math.round(Math.random() * 1000)}`,
-      );
-      const buffer = new Buffer(response.data);
-      return buffer.toString("base64");
+      try {
+        const response = await axios.get(
+          `${api}/${Math.round(Math.random() * 1000)}?apikey=04xqAaeZzHY5QX`,
+        );
+        const buffer = new Buffer(response.data);
+        return buffer.toString("base64");
+      } catch (error) {
+        console.log(error);
+      }
     };
     const fetchDataAndSetAvatar = async () => {
       const fetchPromises = Array.from({ length: 4 }, fetchData);
@@ -85,7 +89,14 @@ const Avatar = () => {
               />
             </div>
           ))}
-          <button onClick={handleProfile}>Save profile</button>
+        </div>
+        <div className="flex justify-center">
+          <button
+            onClick={handleProfile}
+            className="text-center mt-10 border-2 p-3"
+          >
+            Save profile
+          </button>
         </div>
       </div>
     </div>
