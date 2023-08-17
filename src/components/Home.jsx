@@ -6,10 +6,14 @@ import { loadState } from "../redux/localstorage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import Addcontact from "./Addcontact";
+
 const Home = () => {
   const navigate = useNavigate();
   const [allusers, setUsers] = useState([]);
-  const { data, isLoading } = useGetAllContactQuery();
+  const [search, setSearch] = useState("");
+  const { data, isLoading, refetch } = useGetAllContactQuery();
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const user = loadState();
@@ -31,10 +35,28 @@ const Home = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (search.length === 0) {
+      setSearchResults([]);
+    } else {
+      const filteredAllUsersExcludingContacts = allusers.filter(
+        (user) => !contacts.some((contact) => contact.otherUserId === user.id),
+      );
+      const searchUser = filteredAllUsersExcludingContacts.filter((user) => {
+        const lowerSearch = search.toLowerCase();
+        const email = user.email.split("@")[0];
+        return (
+          user.name.toLowerCase().includes(lowerSearch) ||
+          email.toLowerCase().includes(lowerSearch)
+        );
+      });
+      setSearchResults(searchUser);
+    }
+  }, [search, data]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  console.log(allusers);
   const contacts = data.data;
 
   return (
@@ -47,12 +69,37 @@ const Home = () => {
               placeholder={`Search`}
               type="text"
               className="p-2 rounded-xl bg-[#2e333d] outline-none"
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
             />
+            <div>
+              {searchResults.map((user) => (
+                <div
+                  key={user.id}
+                  className="bg-[#2e333d] w-72 mt-4 p-3 rounded-xl flex justify-between items-center"
+                >
+                  <div className="flex gap-2">
+                    <img
+                      src={`data:image/svg+xml;base64,${user.avater}`}
+                      className="rounded-xl w-10 h-10"
+                    />
+                    <div>
+                      <h1>{user.name}</h1>
+                      <h1 className="text-gray-400">{user.email}</h1>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Addcontact user={user} refetch={refetch} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </form>
           <div>
             {contacts.map((contact) => (
               <div key={contact.id}>
-                <Contact contact={contact} />
+                <Contact contact={contact} refetch={refetch} />
               </div>
             ))}
           </div>

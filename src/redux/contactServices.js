@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { loadState } from "./localstorage";
 
-// Define a service using a base URL and expected endpoints
 export const contactServices = createApi({
   reducerPath: "contactServices",
   baseQuery: fetchBaseQuery({
@@ -17,9 +16,25 @@ export const contactServices = createApi({
     getAllContact: builder.query({
       query: () => "contact",
     }),
+    addContact: builder.mutation({
+      query: ({
+        otherUserId,
+        otherUserName,
+        otherUserEmail,
+        otherUserAvater,
+      }) => ({
+        url: "contact",
+        method: "POST",
+        body: {
+          otherUserId,
+          otherUserName,
+          otherUserEmail,
+          otherUserAvater,
+        },
+      }),
+      transformResponse: (response) => response,
+    }),
   }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-export const { useGetAllContactQuery } = contactServices;
+export const { useGetAllContactQuery, useAddContactMutation } = contactServices;
