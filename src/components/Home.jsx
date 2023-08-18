@@ -25,6 +25,7 @@ const Home = () => {
     if (!user.isAvater) {
       navigate("/avatar");
     }
+    refetch();
   }, []);
 
   useEffect(() => {
@@ -44,7 +45,10 @@ const Home = () => {
     if (search.length === 0) {
       setSearchResults([]);
     } else {
-      const filteredAllUsersExcludingContacts = allusers.filter(
+      const excludeallusers = allusers.filter(
+        (user) => user.id !== currentUser.id,
+      );
+      const filteredAllUsersExcludingContacts = excludeallusers.filter(
         (user) => !contacts.some((contact) => contact.otherUserId === user.id),
       );
       const searchUser = filteredAllUsersExcludingContacts.filter((user) => {
@@ -63,6 +67,7 @@ const Home = () => {
     return <div>Loading...</div>;
   }
   const contacts = data.data;
+  console.log(contacts);
 
   const handleContactClick = async (otherUserId) => {
     try {
@@ -84,10 +89,10 @@ const Home = () => {
   };
 
   return (
-    <div className="bg-[#202329] text-white">
+    <div className="text-white">
       <Navbar />
-      <div className="container mx-auto grid grid-cols-4 h-screen p-4">
-        <div>
+      <div className="container mx-auto grid grid-cols-5 h-screen p-4">
+        <div className="bg-blue-300 p-3">
           <form>
             <input
               placeholder={`Search`}
@@ -129,20 +134,23 @@ const Home = () => {
                   handleContactClick(contact.otherUserId);
                 }}
               >
-                <Contact contact={contact} refetch={refetch} />
+                <Contact contact={contact} />
               </button>
             ))}
           </div>
         </div>
-        <div className="col-span-3 text-white">
+        <div className="col-span-3 text-white bg-red-500 p-3">
           {roomId && (
             <Chatcontainer
               currentChat={currentChat}
+              setroomId={setroomId}
               roomId={roomId}
               currentUser={currentUser}
+              refetch={refetch}
             />
           )}
         </div>
+        <div className="bg-black"></div>
       </div>
     </div>
   );
