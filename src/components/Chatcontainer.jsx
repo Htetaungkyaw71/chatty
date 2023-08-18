@@ -29,17 +29,21 @@ const Chatcontainer = ({
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    try {
-      await addMessage({ text, roomId })
-        .unwrap()
-        .then((fulfilled) => {
-          console.log(fulfilled);
-          recall();
-          setText("");
-          alert("success");
-        });
-    } catch (error) {
-      console.log(error);
+    if (e.key === "Enter") {
+      // 👇️ your logic here
+      console.log("Enter key pressed ✅");
+      try {
+        await addMessage({ text, roomId })
+          .unwrap()
+          .then((fulfilled) => {
+            console.log(fulfilled);
+            recall();
+            setText("");
+            alert("success");
+          });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   console.log(roomId);
@@ -66,9 +70,14 @@ const Chatcontainer = ({
     <div>
       {currentChat && (
         <div className="flex flex-col h-[90vh] ">
-          <div className="flex justify-between">
-            <div>{currentChat.otherUserName}</div>
-
+          <div className="flex justify-between items-center border-b-[1px] p-2 border-gray-700 mb-3 ">
+            <div className="flex items-center gap-3 mb-2">
+              <img
+                src={`data:image/svg+xml;base64,${currentChat.otherUserAvater}`}
+                className="rounded-xl w-10 h-10"
+              />
+              {currentChat.otherUserName}
+            </div>
             <div>
               <button onClick={removeContact}>Remove</button>
             </div>
@@ -94,13 +103,14 @@ const Chatcontainer = ({
             <input
               placeholder="your message"
               type="text"
-              className=" p-2 w-full bg-[#2e333d] outline-none rounded-xl"
+              className=" p-2 w-full bg-[#171E3A] outline-none rounded-xl"
               value={text}
+              onKeyDown={handleSendMessage}
               onChange={(e) => setText(e.target.value)}
             />
             <button
               onClick={handleSendMessage}
-              className="bg-slate-600 text-white p-2 rounded-xl"
+              className="bg-[#171E3A] text-white p-2 rounded-xl"
             >
               Send
             </button>

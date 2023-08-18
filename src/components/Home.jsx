@@ -91,13 +91,13 @@ const Home = () => {
   return (
     <div className="text-white">
       <Navbar />
-      <div className="container mx-auto grid grid-cols-5 h-screen p-4">
-        <div className="bg-blue-300 p-3">
+      <div className="container mx-auto grid grid-cols-4 h-screen p-4 gap-4">
+        <div className="p-3 bg-[#1E2746] rounded-xl shadow-2xl shadow-[#171E3A]">
           <form>
             <input
               placeholder={`Search`}
               type="text"
-              className="p-2 rounded-xl bg-[#2e333d] outline-none"
+              className="p-2 rounded-xl bg-[#171E3A] outline-none w-full"
               onChange={(e) => setSearch(e.target.value)}
               value={search}
             />
@@ -105,7 +105,7 @@ const Home = () => {
               {searchResults.map((user) => (
                 <div
                   key={user.id}
-                  className="bg-[#2e333d] w-72 mt-4 p-3 rounded-xl flex justify-between items-center"
+                  className="bg-[#171E3A] w-64 mt-4 p-3 rounded-xl flex justify-between items-center"
                 >
                   <div className="flex gap-2">
                     <img
@@ -139,7 +139,7 @@ const Home = () => {
             ))}
           </div>
         </div>
-        <div className="col-span-3 text-white bg-red-500 p-3">
+        <div className="col-span-2 bg-[#1E2746] rounded-xl shadow-2xl text-white  p-3">
           {roomId && (
             <Chatcontainer
               currentChat={currentChat}
@@ -150,7 +150,7 @@ const Home = () => {
             />
           )}
         </div>
-        <div className="bg-black"></div>
+        <div className=""></div>
       </div>
     </div>
   );

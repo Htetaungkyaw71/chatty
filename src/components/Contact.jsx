@@ -2,7 +2,7 @@
 
 const Contact = ({ contact }) => {
   return (
-    <div className="mt-3 p-3 w-56 rounded-xl  hover:bg-[#2e333d]">
+    <div className="mt-3 p-3 w-64 rounded-xl  hover:bg-[#171E3A]">
       <div className="flex gap-3 items-center">
         <img
           src={`data:image/svg+xml;base64,${contact.otherUserAvater}`}
