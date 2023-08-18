@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import Addcontact from "./Addcontact";
+import Chatcontainer from "./Chatcontainer";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -14,9 +15,13 @@ const Home = () => {
   const [search, setSearch] = useState("");
   const { data, isLoading, refetch } = useGetAllContactQuery();
   const [searchResults, setSearchResults] = useState([]);
+  const [currentChat, setCurrentChat] = useState(undefined);
+  const [currentUser, setcurrentUser] = useState(undefined);
+  const [roomId, setroomId] = useState(undefined);
 
   useEffect(() => {
     const user = loadState();
+    setcurrentUser(user);
     if (!user.isAvater) {
       navigate("/avatar");
     }
@@ -59,6 +64,25 @@ const Home = () => {
   }
   const contacts = data.data;
 
+  const handleContactClick = async (otherUserId) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/createroom", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+        body: JSON.stringify({ otherUserId }),
+      });
+
+      const data = await response.json();
+      const roomId = data.roomId;
+      setroomId(roomId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="bg-[#202329] text-white">
       <Navbar />
@@ -98,13 +122,27 @@ const Home = () => {
           </form>
           <div>
             {contacts.map((contact) => (
-              <div key={contact.id}>
+              <button
+                key={contact.id}
+                onClick={() => {
+                  setCurrentChat(contact);
+                  handleContactClick(contact.otherUserId);
+                }}
+              >
                 <Contact contact={contact} refetch={refetch} />
-              </div>
+              </button>
             ))}
           </div>
         </div>
-        <div className="col-span-3 bg-white"></div>
+        <div className="col-span-3 text-white">
+          {roomId && (
+            <Chatcontainer
+              currentChat={currentChat}
+              roomId={roomId}
+              currentUser={currentUser}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
