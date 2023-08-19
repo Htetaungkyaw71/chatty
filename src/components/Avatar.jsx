@@ -69,7 +69,7 @@ const Avatar = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-[#202329] text-gray-300">
+    <div className="flex justify-center items-center h-screen text-[#45CFE1]">
       <div>
         <h1 className="text-center font-bold text-xl mb-10">
           Pick an avatar as your profile picture
@@ -93,7 +93,7 @@ const Avatar = () => {
         <div className="flex justify-center">
           <button
             onClick={handleProfile}
-            className="text-center mt-10 border-2 p-3"
+            className="text-center mt-10 border-2 p-3 border-[#45CFE1] text-[#45CFE1] hover:text-white duration-300 rounded-lg hover:bg-[#45CFE1]"
           >
             Save profile
           </button>

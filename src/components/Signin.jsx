@@ -37,12 +37,15 @@ const Signin = () => {
     <>
       <div className="flex justify-center items-center h-screen">
         <form onSubmit={handleSubmit(onSubmit)}>
+          <h1 className="text-[#45CFE1] text-center mb-3 text-3xl font-bold">
+            Chatty
+          </h1>
           {error.length > 0 && <Error message={error} />}
           {errors.email && <Error message={errors.email.message} />}
           {errors.password && <Error message={errors.password.message} />}
-          <label className="text-gray-700">Email</label>
+          <label className="text-gray-300">Email</label>
           <input
-            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg"
+            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg  outline-[#45CFE1]"
             type="text"
             placeholder="email"
             name="email"
@@ -56,9 +59,9 @@ const Signin = () => {
             })}
           />
 
-          <label className="text-gray-700">Password</label>
+          <label className="text-gray-300">Password</label>
           <input
-            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg"
+            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg  outline-[#45CFE1]"
             type="password"
             placeholder="password"
             name="password"
@@ -72,13 +75,13 @@ const Signin = () => {
 
           <button
             type="submit"
-            className="border-2 border-[#8d6ff8] py-1 px-2 rounded-lg text-[#8d6ff8] font-semibold hover:bg-[#8d6ff8] hover:text-white hover:duration-500 w-full"
+            className="border-2 mt-2 border-[#45CFE1] py-1 px-2 rounded-lg text-[#45CFE1] font-semibold hover:bg-[#45CFE1] hover:text-white hover:duration-500 w-full"
           >
             Sign In
           </button>
-          <div className="mt-5 text-gray-600">
+          <div className="mt-5 text-gray-300">
             Don{"'"}t you have account{" "}
-            <Link to="/signup" className="text-blue-500 font-bold ml-1">
+            <Link to="/signup" className="text-[#45CFE1] font-bold ml-1">
               Sign up
             </Link>
           </div>

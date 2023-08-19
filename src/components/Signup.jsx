@@ -40,6 +40,10 @@ const SignUp = () => {
     <>
       <div className="flex justify-center items-center h-screen">
         <form onSubmit={handleSubmit(onSubmit)}>
+          <h1 className="text-[#45CFE1] text-center mb-3 text-3xl font-bold">
+            Chatty
+          </h1>
+
           <div className={hidden}>
             {err.length > 0 && <Error message={err} />}
           </div>
@@ -48,9 +52,9 @@ const SignUp = () => {
           {errors.email && <Error message={errors.email.message} />}
           {errors.password && <Error message={errors.password.message} />}
 
-          <label className="text-gray-700">Name</label>
+          <label className="text-gray-300">Name</label>
           <input
-            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg"
+            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg outline-[#45CFE1]"
             type="text"
             placeholder="name"
             name="name"
@@ -62,9 +66,9 @@ const SignUp = () => {
             })}
           />
 
-          <label className="text-gray-700">Email</label>
+          <label className="text-gray-300">Email</label>
           <input
-            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg"
+            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg outline-[#45CFE1]"
             type="text"
             placeholder="email"
             name="email"
@@ -77,9 +81,9 @@ const SignUp = () => {
               },
             })}
           />
-          <label className="text-gray-700">Password</label>
+          <label className="text-gray-300">Password</label>
           <input
-            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg"
+            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg outline-[#45CFE1]"
             type="password"
             placeholder="password"
             name="password"
@@ -92,13 +96,13 @@ const SignUp = () => {
           />
           <button
             type="submit"
-            className="border-2 border-[#8d6ff8] py-1 px-2 rounded-lg text-[#8d6ff8] font-semibold hover:bg-[#8d6ff8] hover:text-white hover:duration-500 w-full"
+            className="border-2 border-[#45CFE1] py-1 px-2 rounded-lg text-[#45CFE1] font-semibold hover:bg-[#45CFE1] hover:text-white hover:duration-500 w-full"
           >
             Sign Up
           </button>
-          <div className="mt-5 text-gray-600">
+          <div className="mt-5 text-gray-300">
             Already have an account{" "}
-            <Link to="/signin" className="text-blue-500 font-bold ml-1">
+            <Link to="/signin" className="text-[#45CFE1] font-bold ml-1">
               Sign in
             </Link>
           </div>
