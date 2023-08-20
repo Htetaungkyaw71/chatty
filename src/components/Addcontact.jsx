@@ -19,7 +19,6 @@ const Addcontact = ({ user, refetch }) => {
         .then((fulfilled) => {
           console.log(fulfilled);
           refetch();
-          alert("success");
         });
     } catch (error) {
       console.log(error);

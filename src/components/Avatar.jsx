@@ -4,6 +4,9 @@ import { Buffer } from "buffer";
 import axios from "axios";
 import { loadState } from "../redux/localstorage";
 import { useNavigate } from "react-router-dom";
+import MainLoader from "./helper/MainLoader";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Avatar = () => {
   const navigate = useNavigate();
@@ -40,12 +43,21 @@ const Avatar = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <MainLoader />;
   }
 
   const handleProfile = async () => {
     if (selectedavatar === undefined) {
-      alert("Select avatar");
+      toast("Please select an avatar!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } else {
       const user = loadState();
       const { data } = await axios.put(
@@ -55,21 +67,30 @@ const Avatar = () => {
         },
       );
       const result = data.data;
-      console.log(result);
-      console.log(user);
+
       if (result.isAvater) {
         user.avater = result.avater;
         user.isAvater = result.isAvater;
         localStorage.setItem("data", JSON.stringify(user));
         navigate("/");
       } else {
-        alert("error fetch avatar");
+        toast.error("Error in fetching avatar", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       }
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen text-[#45CFE1]">
+      <ToastContainer />
       <div>
         <h1 className="text-center font-bold text-xl mb-10">
           Pick an avatar as your profile picture

@@ -5,6 +5,9 @@ import {
 } from "../redux/messageServices";
 import { loadState } from "../redux/localstorage";
 import axios from "axios";
+import Loader from "./helper/Loader";
+import { VscSend } from "react-icons/vsc";
+import { formatDateAndTime } from "./helper/date";
 
 /* eslint-disable react/prop-types */
 const Chatcontainer = ({
@@ -22,31 +25,26 @@ const Chatcontainer = ({
   } = useGetAllMessageQuery({ roomId });
   const [addMessage] = useAddMessageMutation();
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return <Loader />;
   }
 
   const messages = data.data;
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (e.key === "Enter") {
-      // 👇️ your logic here
-      console.log("Enter key pressed ✅");
-      try {
-        await addMessage({ text, roomId })
-          .unwrap()
-          .then((fulfilled) => {
-            console.log(fulfilled);
-            recall();
-            setText("");
-            alert("success");
-          });
-      } catch (error) {
-        console.log(error);
-      }
+    try {
+      await addMessage({ text, roomId })
+        .unwrap()
+        .then((fulfilled) => {
+          console.log(fulfilled);
+          recall();
+          setText("");
+        });
+    } catch (error) {
+      console.log(error);
     }
   };
-  console.log(roomId);
+
   const removeContact = async (e) => {
     const user = loadState();
     e.preventDefault();
@@ -66,10 +64,11 @@ const Chatcontainer = ({
       console.log(error);
     }
   };
+
   return (
     <div>
       {currentChat && (
-        <div className="flex flex-col h-[90vh] ">
+        <div className="flex flex-col h-[80vh] ">
           <div className="flex justify-between items-center border-b-[1px] p-2 border-gray-700 mb-3 ">
             <div className="flex items-center gap-3 mb-2">
               <img
@@ -83,36 +82,61 @@ const Chatcontainer = ({
             </div>
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 chat-scroll p-3 text-gray-100">
             {messages.map((message) => (
-              <div key={message.id}>
-                <div
-                  className={
-                    message.senderId === currentUser.id
-                      ? "text-right"
-                      : "text-left"
-                  }
-                >
-                  {message.text}
-                </div>
+              <div
+                key={message.id}
+                className={
+                  message.senderId === currentUser.id
+                    ? "block text-left mt-5 "
+                    : "flex gap-2 mt-5"
+                }
+              >
+                {message.senderId !== currentUser.id && (
+                  <div className="flex-shrink-0">
+                    <img
+                      src={`data:image/svg+xml;base64,${message.sender.avater}`}
+                      alt="Sender Avatar"
+                      className="rounded-xl w-10 h-10"
+                    />
+                  </div>
+                )}
+
+                {message.senderId === currentUser.id ? (
+                  <div className="text-right text-gray-300">
+                    {message.text}
+                    <div className="text-sm text-gray-500 ">
+                      {formatDateAndTime(message.createdAt)}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-left">
+                    <div className="font-semibold">
+                      {message.sender.name}
+                      <span className="text-sm text-gray-500 font-medium ml-3">
+                        {formatDateAndTime(message.createdAt)}
+                      </span>
+                    </div>
+                    <div className="text-md text-gray-300">{message.text}</div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          <div className="flex justify-between gap-3 w-full mx-auto px-auto self-end">
+          <div className="flex justify-between mt-3 w-full mx-auto px-auto self-end">
             <input
-              placeholder="your message"
+              placeholder="Type here"
               type="text"
-              className=" p-2 w-full bg-[#171E3A] outline-none rounded-xl"
+              className=" p-2 w-full bg-[#171E3A] outline-none rounded-xl rounded-r-none"
               value={text}
-              onKeyDown={handleSendMessage}
               onChange={(e) => setText(e.target.value)}
             />
             <button
               onClick={handleSendMessage}
-              className="bg-[#171E3A] text-white p-2 rounded-xl"
+              className="bg-[#171E3A] text-white p-2 text-xl rounded-r-xl"
             >
-              Send
+              <VscSend />
             </button>
           </div>
         </div>

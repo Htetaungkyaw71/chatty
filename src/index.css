@@ -8,3 +8,99 @@ body {
 }
 
 /* 2e333d */
+
+/* Loader */
+
+.loader {
+  width: 75px;
+  height: 50px;
+  margin: 0 auto;
+  background: #fff;
+  position: relative;
+  border-radius: 100%;
+}
+.loader:before {
+  content: "";
+  position: absolute;
+  box-sizing: border-box;
+  border: 5px solid transparent;
+  border-top: 15px solid #fff;
+  transform: rotate(45deg);
+  top: 40px;
+  left: 5px;
+}
+
+.loader:after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: #171e3a;
+  box-shadow:
+    20px 0 #171e3a,
+    -20px 0 #171e3a;
+  animation: flash 0.5s ease-out infinite alternate;
+}
+
+@keyframes flash {
+  0% {
+    background-color: #585d6d;
+    box-shadow:
+      20px 0 #585d6d,
+      -20px 0 #171e3a;
+  }
+  50% {
+    background-color: #171e3a;
+    box-shadow:
+      20px 0 #585d6d,
+      -20px 0 #585d6d;
+  }
+  100% {
+    background-color: #585d6d;
+    box-shadow:
+      20px 0 #171e3a,
+      -20px 0 #585d6d;
+  }
+}
+
+/* Custom scrollbar styles */
+.chat-scroll {
+  overflow: auto; /* Add scrollbars only when content overflows */
+  scrollbar-width: thin;
+  scrollbar-color: #cccccc #171e3a;
+}
+
+/* Webkit (Chrome, Safari) scrollbar styles */
+.chat-scroll::-webkit-scrollbar {
+  width: 1px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background-color: #cccccc;
+  border-radius: 5px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #cccccc;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background-color: #171e3a;
+}
+
+/* Firefox scrollbar styles */
+.chat-scroll {
+  scrollbar-color: #cccccc #171e3a;
+  scrollbar-width: thin;
+}
+
+/* Microsoft Edge and Internet Explorer scrollbar styles */
+.chat-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: #f1f1f1 #171e3a;
+}

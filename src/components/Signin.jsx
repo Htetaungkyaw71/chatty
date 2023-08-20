@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { useSignInMutation } from "../redux/userServices";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Error from "./helper/Error";
 import { saveState } from "../redux/localstorage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signin = () => {
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const [signin] = useSignInMutation();
   const {
@@ -21,26 +21,32 @@ const Signin = () => {
         .unwrap()
         .then((fulfilled) => {
           const data = fulfilled.data;
-          console.log(data);
           localStorage.removeItem("data");
           saveState(data);
-          setError("");
           navigate("/");
         });
     } catch (error) {
-      console.log(error);
-      setError(error.data.message);
+      toast.error(error.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
 
   return (
     <>
       <div className="flex justify-center items-center h-screen">
+        <ToastContainer />
         <form onSubmit={handleSubmit(onSubmit)}>
           <h1 className="text-[#45CFE1] text-center mb-3 text-3xl font-bold">
             Chatty
           </h1>
-          {error.length > 0 && <Error message={error} />}
           {errors.email && <Error message={errors.email.message} />}
           {errors.password && <Error message={errors.password.message} />}
           <label className="text-gray-300">Email</label>

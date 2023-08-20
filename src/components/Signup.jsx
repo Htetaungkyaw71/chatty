@@ -40,10 +40,6 @@ const SignUp = () => {
     <>
       <div className="flex justify-center items-center h-screen">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="text-[#45CFE1] text-center mb-3 text-3xl font-bold">
-            Chatty
-          </h1>
-
           <div className={hidden}>
             {err.length > 0 && <Error message={err} />}
           </div>
@@ -51,10 +47,13 @@ const SignUp = () => {
           {errors.name && <Error message={errors.name.message} />}
           {errors.email && <Error message={errors.email.message} />}
           {errors.password && <Error message={errors.password.message} />}
+          <h1 className="text-[#45CFE1] text-center mb-3 text-3xl font-bold">
+            Chatty
+          </h1>
 
           <label className="text-gray-300">Name</label>
           <input
-            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg outline-[#45CFE1]"
+            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg"
             type="text"
             placeholder="name"
             name="name"
@@ -68,7 +67,7 @@ const SignUp = () => {
 
           <label className="text-gray-300">Email</label>
           <input
-            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg outline-[#45CFE1]"
+            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg"
             type="text"
             placeholder="email"
             name="email"
@@ -83,7 +82,7 @@ const SignUp = () => {
           />
           <label className="text-gray-300">Password</label>
           <input
-            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg outline-[#45CFE1]"
+            className="w-full block p-2 mt-1 border-2 mb-3 rounded-lg"
             type="password"
             placeholder="password"
             name="password"

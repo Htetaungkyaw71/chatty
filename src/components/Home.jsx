@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import { loadState } from "../redux/localstorage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import Addcontact from "./Addcontact";
 import Chatcontainer from "./Chatcontainer";
+import Welcome from "./helper/Welcome";
+import MainLoader from "./helper/MainLoader";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const Home = () => {
   }, [search, data]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <MainLoader />;
   }
   const contacts = data.data;
   console.log(contacts);
@@ -89,10 +90,10 @@ const Home = () => {
   };
 
   return (
-    <div className="text-white">
+    <div className="text-white ">
       <Navbar />
-      <div className="container mx-auto grid grid-cols-4 h-screen p-4 gap-4">
-        <div className="p-3 bg-[#1E2746] rounded-xl shadow-2xl shadow-[#171E3A]">
+      <div className="container mx-auto grid h-[80vh] grid-cols-4 p-4 gap-4">
+        <div className="p-3 bg-[#1E2746] rounded-xl shadow-2xl shadow-[#171E3A] ">
           <form>
             <input
               placeholder={`Search`}
@@ -101,7 +102,23 @@ const Home = () => {
               onChange={(e) => setSearch(e.target.value)}
               value={search}
             />
-            <div>
+          </form>
+          {searchResults.length === 0 ? (
+            <div className="h-[70vh] chat-scroll">
+              {contacts.map((contact) => (
+                <button
+                  key={contact.id}
+                  onClick={() => {
+                    setCurrentChat(contact);
+                    handleContactClick(contact.otherUserId);
+                  }}
+                >
+                  <Contact contact={contact} />
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="h-[70vh] chat-scroll">
               {searchResults.map((user) => (
                 <div
                   key={user.id}
@@ -124,23 +141,10 @@ const Home = () => {
                 </div>
               ))}
             </div>
-          </form>
-          <div>
-            {contacts.map((contact) => (
-              <button
-                key={contact.id}
-                onClick={() => {
-                  setCurrentChat(contact);
-                  handleContactClick(contact.otherUserId);
-                }}
-              >
-                <Contact contact={contact} />
-              </button>
-            ))}
-          </div>
+          )}
         </div>
-        <div className="col-span-2 bg-[#1E2746] rounded-xl shadow-2xl text-white  p-3">
-          {roomId && (
+        <div className="col-span-2 bg-[#1E2746] rounded-xl shadow-2xl text-white p-3">
+          {roomId ? (
             <Chatcontainer
               currentChat={currentChat}
               setroomId={setroomId}
@@ -148,6 +152,8 @@ const Home = () => {
               currentUser={currentUser}
               refetch={refetch}
             />
+          ) : (
+            <Welcome currentUser={currentUser ? currentUser : "Loading"} />
           )}
         </div>
         <div className=""></div>
