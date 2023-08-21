@@ -20,6 +20,10 @@ const Chatcontainer = ({
   refetch,
 }) => {
   const [dot, setDot] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [isHovered, setIsHovered] = useState(null);
+  const [hoverTimeout, setHoverTimeout] = useState(null);
+
   const [text, setText] = useState("");
   const {
     data,
@@ -67,6 +71,24 @@ const Chatcontainer = ({
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleMouseEnter = (messageId) => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+    }
+    const timeout = setTimeout(() => {
+      setIsHovered(messageId);
+    }, 400);
+    setHoverTimeout(timeout);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+    }
+    setHoverTimeout(null);
+    setIsHovered(null);
   };
 
   return (
@@ -117,12 +139,28 @@ const Chatcontainer = ({
                 )}
 
                 {message.senderId === currentUser.id ? (
-                  <div className="text-right text-gray-300">
-                    {message.text}
-                    <div className="text-sm text-gray-500 ">
-                      {formatDateAndTime(message.createdAt)}
+                  <>
+                    <div
+                      className="text-right text-gray-300"
+                      onMouseEnter={() => handleMouseEnter(message.id)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      {edit && <div>hello world</div>}
+                      {isHovered === message.id && (
+                        <button
+                          onClick={() => setEdit(!edit)}
+                          className="bg-white text-gray-500 p-2 py-1 rounded-xl text-center mr-3"
+                        >
+                          <BsThreeDotsVertical className="text-lg" />
+                        </button>
+                      )}
+                      <span>{message.text}</span>
+
+                      <div className="text-sm text-gray-500 ">
+                        {formatDateAndTime(message.createdAt)}
+                      </div>
                     </div>
-                  </div>
+                  </>
                 ) : (
                   <div className="text-left">
                     <div className="font-semibold">
@@ -131,6 +169,7 @@ const Chatcontainer = ({
                         {formatDateAndTime(message.createdAt)}
                       </span>
                     </div>
+
                     <div className="text-md text-gray-300">{message.text}</div>
                   </div>
                 )}
