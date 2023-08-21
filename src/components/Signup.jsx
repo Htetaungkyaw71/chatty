@@ -1,13 +1,12 @@
-import { useState } from "react";
 import { useSignUpMutation } from "../redux/userServices";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Error from "./helper/Error";
 import { saveState } from "../redux/localstorage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignUp = () => {
-  const [err, setError] = useState("");
-  const [hidden, setHidden] = useState("hidden");
   const navigate = useNavigate();
   const [signup] = useSignUpMutation();
   const {
@@ -23,27 +22,27 @@ const SignUp = () => {
           const data = fulfilled.data;
           localStorage.removeItem("data");
           saveState(data);
-          setError("");
           navigate("/");
         });
     } catch (error) {
-      console.log(error);
-      setError(error.data.message);
-      setHidden("block");
-      setTimeout(() => {
-        setHidden("hidden");
-      }, [3000]);
+      toast.error(error.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
 
   return (
     <>
+      <ToastContainer />
       <div className="flex justify-center items-center h-screen">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={hidden}>
-            {err.length > 0 && <Error message={err} />}
-          </div>
-
           {errors.name && <Error message={errors.name.message} />}
           {errors.email && <Error message={errors.email.message} />}
           {errors.password && <Error message={errors.password.message} />}
