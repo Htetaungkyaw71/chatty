@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { loadState } from "../redux/localstorage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Addcontact from "./Addcontact";
 import Chatcontainer from "./Chatcontainer";
 import Welcome from "./helper/Welcome";
 import MainLoader from "./helper/MainLoader";
 import Profile from "./Profile";
+import Results from "./Results";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -121,29 +121,14 @@ const Home = () => {
           ) : (
             <div className="h-[70vh] chat-scroll">
               {searchResults.map((user) => (
-                <div
-                  key={user.id}
-                  className="bg-[#171E3A] w-64 mt-4 p-3 rounded-xl flex justify-between items-center"
-                >
-                  <div className="flex gap-2">
-                    <img
-                      src={`data:image/svg+xml;base64,${user.avater}`}
-                      className="rounded-xl w-10 h-10"
-                    />
-                    <div>
-                      <h1>{user.name}</h1>
-                      <h1 className="text-gray-400">{user.email}</h1>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Addcontact user={user} refetch={refetch} />
-                  </div>
+                <div key={user.id}>
+                  <Results user={user} refetch={refetch} />
                 </div>
               ))}
             </div>
           )}
         </div>
+
         <div className="col-span-2 bg-[#1E2746] rounded-xl shadow-2xl text-white p-3">
           {roomId ? (
             <Chatcontainer

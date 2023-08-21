@@ -1,8 +1,8 @@
+/* eslint-disable react/prop-types */
+
 import { Link } from "react-router-dom";
 import { FiEdit2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-
-/* eslint-disable react/prop-types */
 
 const Profile = ({ currentUser }) => {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ const Profile = ({ currentUser }) => {
             {currentUser.email}
           </h1>
           <hr />
-          <div className="flex items-center gap-2 mt-5">
+          <div className="flex items-center gap-5 mt-5">
             <Link
               to="/avatar"
               className="flex items-center justify-center text-center gap-2 "
@@ -33,7 +33,7 @@ const Profile = ({ currentUser }) => {
                 localStorage.removeItem("data");
                 navigate("/signin");
               }}
-              className="border-[1px] p-2 rounded-xl border-[#45CFE1] text-[#45CFE1] hover:bg-[#45CFE1] hover:text-white"
+              className="border-[1px] p-2 py-1 rounded-xl border-[#45CFE1] text-[#45CFE1] hover:bg-[#45CFE1] hover:text-white"
             >
               Logout
             </button>

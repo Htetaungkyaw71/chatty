@@ -8,6 +8,8 @@ import axios from "axios";
 import Loader from "./helper/Loader";
 import { VscSend } from "react-icons/vsc";
 import { formatDateAndTime } from "./helper/date";
+import { BiSolidVideo } from "react-icons/bi";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 /* eslint-disable react/prop-types */
 const Chatcontainer = ({
@@ -17,6 +19,7 @@ const Chatcontainer = ({
   setroomId,
   refetch,
 }) => {
+  const [dot, setDot] = useState(false);
   const [text, setText] = useState("");
   const {
     data,
@@ -24,6 +27,7 @@ const Chatcontainer = ({
     refetch: recall,
   } = useGetAllMessageQuery({ roomId });
   const [addMessage] = useAddMessageMutation();
+
   if (isLoading) {
     return <Loader />;
   }
@@ -67,6 +71,11 @@ const Chatcontainer = ({
 
   return (
     <div>
+      {dot && (
+        <div className="z-10 absolute right-64 bg-white text-black p-3 top-14 rounded-xl rounded-bl-none">
+          <button onClick={removeContact}>Remove contact</button>
+        </div>
+      )}
       {currentChat && (
         <div className="flex flex-col h-[80vh] ">
           <div className="flex justify-between items-center border-b-[1px] p-2 border-gray-700 mb-3 ">
@@ -77,8 +86,13 @@ const Chatcontainer = ({
               />
               {currentChat.otherUserName}
             </div>
-            <div>
-              <button onClick={removeContact}>Remove</button>
+            <div className="flex items-center gap-4">
+              <button>
+                <BiSolidVideo className="text-2xl" />
+              </button>
+              <button onClick={() => setDot(!dot)}>
+                <BsThreeDotsVertical className="text-xl" />
+              </button>
             </div>
           </div>
 
