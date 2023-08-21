@@ -69,7 +69,8 @@ body {
 
 /* Custom scrollbar styles */
 .chat-scroll {
-  overflow: auto; /* Add scrollbars only when content overflows */
+  overflow-y: auto; /* Add scrollbars only when content overflows */
+  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #cccccc #171e3a;
 }

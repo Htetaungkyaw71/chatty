@@ -9,6 +9,7 @@ import Addcontact from "./Addcontact";
 import Chatcontainer from "./Chatcontainer";
 import Welcome from "./helper/Welcome";
 import MainLoader from "./helper/MainLoader";
+import Profile from "./Profile";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -90,7 +91,7 @@ const Home = () => {
   };
 
   return (
-    <div className="text-white ">
+    <div className="text-white">
       <Navbar />
       <div className="container mx-auto grid h-[80vh] grid-cols-4 p-4 gap-4">
         <div className="p-3 bg-[#1E2746] rounded-xl shadow-2xl shadow-[#171E3A] ">
@@ -113,7 +114,7 @@ const Home = () => {
                     handleContactClick(contact.otherUserId);
                   }}
                 >
-                  <Contact contact={contact} />
+                  <Contact contact={contact} currentUser={currentUser} />
                 </button>
               ))}
             </div>
@@ -156,7 +157,7 @@ const Home = () => {
             <Welcome currentUser={currentUser ? currentUser : "Loading"} />
           )}
         </div>
-        <div className=""></div>
+        <Profile currentUser={currentUser && currentUser} />
       </div>
     </div>
   );
