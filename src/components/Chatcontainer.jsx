@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useAddMessageMutation,
   useGetAllMessageQuery,
@@ -7,7 +7,7 @@ import { loadState } from "../redux/localstorage";
 import axios from "axios";
 import Loader from "./helper/Loader";
 import { VscSend } from "react-icons/vsc";
-
+import { useRef } from "react";
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
@@ -21,6 +21,7 @@ const Chatcontainer = ({
   setroomId,
   refetch,
 }) => {
+  const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
 
   const [text, setText] = useState("");
@@ -30,6 +31,15 @@ const Chatcontainer = ({
     refetch: recall,
   } = useGetAllMessageQuery({ roomId });
   const [addMessage] = useAddMessageMutation();
+
+  useEffect(() => {
+    const lastMessage = chatContainerRef.current.querySelector(
+      ".last-message > div:last-child",
+    );
+    if (lastMessage) {
+      lastMessage.scrollIntoView({ behavior: "auto", block: "end" });
+    }
+  }, []);
 
   if (isLoading) {
     return <Loader />;
@@ -99,7 +109,10 @@ const Chatcontainer = ({
             </div>
           </div>
 
-          <div className="flex-1 chat-scroll p-3 text-gray-100">
+          <div
+            className="flex-1 chat-scroll last-message p-3 text-gray-100"
+            ref={chatContainerRef}
+          >
             {messages.map((message) => (
               <div key={message.id}>
                 <Message
