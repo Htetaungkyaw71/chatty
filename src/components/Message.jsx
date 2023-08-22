@@ -8,6 +8,7 @@ import {
   useDeleteMessageMutation,
   useUpdateMessageMutation,
 } from "../redux/messageServices";
+import EmojiPicker from "emoji-picker-react";
 
 const Message = ({ message, currentUser, recall }) => {
   const [isHovered, setIsHovered] = useState(null);
@@ -16,6 +17,13 @@ const Message = ({ message, currentUser, recall }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [messageText, setMessageText] = useState(message.text);
   const [upateMessage] = useUpdateMessageMutation();
+  const [showEmoji, setshowEmoji] = useState(false);
+
+  const handleEmoji = (event) => {
+    let message = messageText;
+    message += event.emoji;
+    setMessageText(message);
+  };
 
   const handleMouseEnter = (messageId) => {
     if (!isEditable) {
@@ -91,7 +99,7 @@ const Message = ({ message, currentUser, recall }) => {
           />
         </div>
       )}
-
+      {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
       {message.senderId === currentUser.id ? (
         <>
           <div
@@ -106,6 +114,13 @@ const Message = ({ message, currentUser, recall }) => {
                 </button>
                 <button className="mr-2" onClick={handleEdit}>
                   Dismiss
+                </button>
+
+                <button
+                  className="mx-2 text-xl"
+                  onClick={() => setshowEmoji(!showEmoji)}
+                >
+                  😀
                 </button>
                 <input
                   type="text"
