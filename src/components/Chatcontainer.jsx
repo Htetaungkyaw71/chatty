@@ -10,6 +10,7 @@ import { VscSend } from "react-icons/vsc";
 import { useRef } from "react";
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import EmojiPicker from "emoji-picker-react";
 
 import Message from "./Message";
 
@@ -23,6 +24,7 @@ const Chatcontainer = ({
 }) => {
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
+  const [showEmoji, setshowEmoji] = useState(false);
 
   const [text, setText] = useState("");
   const {
@@ -82,6 +84,12 @@ const Chatcontainer = ({
     }
   };
 
+  const handleEmoji = (event) => {
+    let message = text;
+    message += event.emoji;
+    setText(message);
+  };
+
   return (
     <div>
       {dot && (
@@ -123,8 +131,9 @@ const Chatcontainer = ({
               </div>
             ))}
           </div>
-
+          {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
           <div className="flex justify-between mt-3 w-full mx-auto px-auto self-end">
+            <button onClick={() => setshowEmoji(!showEmoji)}>Emoji</button>
             <input
               placeholder="Type here"
               type="text"
