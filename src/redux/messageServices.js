@@ -34,6 +34,16 @@ export const messageServices = createApi({
       }),
       transformResponse: (response) => response,
     }),
+    updateMessage: builder.mutation({
+      query: ({ id, text }) => ({
+        url: `message/${id}`,
+        method: "PUT",
+        body: {
+          text,
+        },
+      }),
+      transformResponse: (response) => response,
+    }),
   }),
 });
 
@@ -41,4 +51,5 @@ export const {
   useGetAllMessageQuery,
   useAddMessageMutation,
   useDeleteMessageMutation,
+  useUpdateMessageMutation,
 } = messageServices;

@@ -4,20 +4,29 @@ import { useState } from "react";
 import { formatDateAndTime } from "./helper/date";
 import { AiOutlineEdit } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
-import { useDeleteMessageMutation } from "../redux/messageServices";
+import {
+  useDeleteMessageMutation,
+  useUpdateMessageMutation,
+} from "../redux/messageServices";
 
 const Message = ({ message, currentUser, recall }) => {
   const [isHovered, setIsHovered] = useState(null);
   const [hoverTimeout, setHoverTimeout] = useState(null);
   const [deleteMessage] = useDeleteMessageMutation();
+  const [isEditable, setIsEditable] = useState(false);
+  const [messageText, setMessageText] = useState(message.text);
+  const [upateMessage] = useUpdateMessageMutation();
+
   const handleMouseEnter = (messageId) => {
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
+    if (!isEditable) {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+      }
+      const timeout = setTimeout(() => {
+        setIsHovered(messageId);
+      }, 400);
+      setHoverTimeout(timeout);
     }
-    const timeout = setTimeout(() => {
-      setIsHovered(messageId);
-    }, 400);
-    setHoverTimeout(timeout);
   };
 
   const handleMouseLeave = () => {
@@ -37,6 +46,27 @@ const Message = ({ message, currentUser, recall }) => {
         .then((fulfilled) => {
           console.log(fulfilled);
           recall();
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEdit = () => {
+    handleMouseLeave();
+    setMessageText(message.text);
+    setIsEditable(!isEditable);
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    try {
+      await upateMessage({ id: message.id, text: messageText })
+        .unwrap()
+        .then((fulfilled) => {
+          console.log(fulfilled);
+          recall();
+          setIsEditable(!isEditable);
         });
     } catch (error) {
       console.log(error);
@@ -69,10 +99,30 @@ const Message = ({ message, currentUser, recall }) => {
             onMouseEnter={() => handleMouseEnter(message.id)}
             onMouseLeave={handleMouseLeave}
           >
-            {message.text}
+            {isEditable ? (
+              <div className="gap-2">
+                <button className="mr-2" onClick={handleSave}>
+                  Save
+                </button>
+                <button className="mr-2" onClick={handleEdit}>
+                  Dismiss
+                </button>
+                <input
+                  type="text"
+                  className="bg-[#171E3A] text-white p-2 text-md rounded-xl"
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                />
+              </div>
+            ) : (
+              message.text
+            )}
             {isHovered === message.id && (
-              <div className="flex bg-white text-gray-500 shadow-lg absolute top-0 right-0 mt-[-1.5rem] mr-2 w-24 rounded-xl">
-                <button className="p-2 text-center hover:bg-gray-300 w-full rounded-l-xl">
+              <div className="flex bg-white text-gray-500 shadow-lg absolute top-0 right-0 mt-8  mr-2 w-24 rounded-xl">
+                <button
+                  className="p-2 text-center hover:bg-gray-300 w-full rounded-l-xl"
+                  onClick={handleEdit}
+                >
                   <AiOutlineEdit className="inline text-xl" />
                 </button>
                 <hr />

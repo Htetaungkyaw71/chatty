@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react";
-import {
-  useAddMessageMutation,
-  useGetAllMessageQuery,
-} from "../redux/messageServices";
+import { useGetAllMessageQuery } from "../redux/messageServices";
 import { loadState } from "../redux/localstorage";
 import axios from "axios";
 import Loader from "./helper/Loader";
-import { VscSend } from "react-icons/vsc";
 import { useRef } from "react";
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import EmojiPicker from "emoji-picker-react";
-
 import Message from "./Message";
+import SendMessage from "./SendMessage";
 
 /* eslint-disable react/prop-types */
 const Chatcontainer = ({
@@ -24,16 +19,14 @@ const Chatcontainer = ({
 }) => {
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
-  const [showEmoji, setshowEmoji] = useState(false);
 
-  const [text, setText] = useState("");
   const {
     data,
     isLoading,
     refetch: recall,
   } = useGetAllMessageQuery({ roomId });
-  const [addMessage] = useAddMessageMutation();
 
+  const messages = data.data;
   useEffect(() => {
     const lastMessage = chatContainerRef.current.querySelector(
       ".last-message > div:last-child",
@@ -41,28 +34,11 @@ const Chatcontainer = ({
     if (lastMessage) {
       lastMessage.scrollIntoView({ behavior: "auto", block: "end" });
     }
-  }, []);
+  }, [messages]);
 
   if (isLoading) {
     return <Loader />;
   }
-
-  const messages = data.data;
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    try {
-      await addMessage({ text, roomId })
-        .unwrap()
-        .then((fulfilled) => {
-          console.log(fulfilled);
-          recall();
-          setText("");
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const removeContact = async (e) => {
     const user = loadState();
@@ -82,12 +58,6 @@ const Chatcontainer = ({
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const handleEmoji = (event) => {
-    let message = text;
-    message += event.emoji;
-    setText(message);
   };
 
   return (
@@ -118,7 +88,7 @@ const Chatcontainer = ({
           </div>
 
           <div
-            className="flex-1 chat-scroll last-message p-3 text-gray-100"
+            className="flex-1 chat-scroll last-message  p-3 text-gray-100"
             ref={chatContainerRef}
           >
             {messages.map((message) => (
@@ -131,23 +101,7 @@ const Chatcontainer = ({
               </div>
             ))}
           </div>
-          {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
-          <div className="flex justify-between mt-3 w-full mx-auto px-auto self-end">
-            <button onClick={() => setshowEmoji(!showEmoji)}>Emoji</button>
-            <input
-              placeholder="Type here"
-              type="text"
-              className=" p-2 w-full bg-[#171E3A] outline-none rounded-xl rounded-r-none"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
-            <button
-              onClick={handleSendMessage}
-              className="bg-[#171E3A] text-white p-2 text-xl rounded-r-xl"
-            >
-              <VscSend />
-            </button>
-          </div>
+          <SendMessage roomId={roomId} recall={recall} />
         </div>
       )}
     </div>
