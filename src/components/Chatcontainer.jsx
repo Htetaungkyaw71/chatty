@@ -7,9 +7,11 @@ import { loadState } from "../redux/localstorage";
 import axios from "axios";
 import Loader from "./helper/Loader";
 import { VscSend } from "react-icons/vsc";
-import { formatDateAndTime } from "./helper/date";
+
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
+
+import Message from "./Message";
 
 /* eslint-disable react/prop-types */
 const Chatcontainer = ({
@@ -20,9 +22,6 @@ const Chatcontainer = ({
   refetch,
 }) => {
   const [dot, setDot] = useState(false);
-  const [edit, setEdit] = useState(false);
-  const [isHovered, setIsHovered] = useState(null);
-  const [hoverTimeout, setHoverTimeout] = useState(null);
 
   const [text, setText] = useState("");
   const {
@@ -73,24 +72,6 @@ const Chatcontainer = ({
     }
   };
 
-  const handleMouseEnter = (messageId) => {
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-    }
-    const timeout = setTimeout(() => {
-      setIsHovered(messageId);
-    }, 400);
-    setHoverTimeout(timeout);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-    }
-    setHoverTimeout(null);
-    setIsHovered(null);
-  };
-
   return (
     <div>
       {dot && (
@@ -120,59 +101,12 @@ const Chatcontainer = ({
 
           <div className="flex-1 chat-scroll p-3 text-gray-100">
             {messages.map((message) => (
-              <div
-                key={message.id}
-                className={
-                  message.senderId === currentUser.id
-                    ? "block text-left mt-5 "
-                    : "flex gap-2 mt-5"
-                }
-              >
-                {message.senderId !== currentUser.id && (
-                  <div className="flex-shrink-0">
-                    <img
-                      src={`data:image/svg+xml;base64,${message.sender.avater}`}
-                      alt="Sender Avatar"
-                      className="rounded-xl w-10 h-10"
-                    />
-                  </div>
-                )}
-
-                {message.senderId === currentUser.id ? (
-                  <>
-                    <div
-                      className="text-right text-gray-300"
-                      onMouseEnter={() => handleMouseEnter(message.id)}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      {edit && <div>hello world</div>}
-                      {isHovered === message.id && (
-                        <button
-                          onClick={() => setEdit(!edit)}
-                          className="bg-white text-gray-500 p-2 py-1 rounded-xl text-center mr-3"
-                        >
-                          <BsThreeDotsVertical className="text-lg" />
-                        </button>
-                      )}
-                      <span>{message.text}</span>
-
-                      <div className="text-sm text-gray-500 ">
-                        {formatDateAndTime(message.createdAt)}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-left">
-                    <div className="font-semibold">
-                      {message.sender.name}
-                      <span className="text-sm text-gray-500 font-medium ml-3">
-                        {formatDateAndTime(message.createdAt)}
-                      </span>
-                    </div>
-
-                    <div className="text-md text-gray-300">{message.text}</div>
-                  </div>
-                )}
+              <div key={message.id}>
+                <Message
+                  message={message}
+                  currentUser={currentUser}
+                  recall={recall}
+                />
               </div>
             ))}
           </div>
