@@ -61,6 +61,7 @@ const Message = ({ message, currentUser, recall }) => {
   };
 
   const handleEdit = () => {
+    setshowEmoji(false);
     handleMouseLeave();
     setMessageText(message.text);
     setIsEditable(!isEditable);
@@ -74,6 +75,7 @@ const Message = ({ message, currentUser, recall }) => {
         .then((fulfilled) => {
           console.log(fulfilled);
           recall();
+          setshowEmoji(false);
           setIsEditable(!isEditable);
         });
     } catch (error) {
@@ -99,7 +101,7 @@ const Message = ({ message, currentUser, recall }) => {
           />
         </div>
       )}
-      {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
+
       {message.senderId === currentUser.id ? (
         <>
           <div
@@ -132,6 +134,7 @@ const Message = ({ message, currentUser, recall }) => {
             ) : (
               message.text
             )}
+            {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
             {isHovered === message.id && (
               <div className="flex bg-white text-gray-500 shadow-lg absolute top-0 right-0 mt-8  mr-2 w-24 rounded-xl">
                 <button
