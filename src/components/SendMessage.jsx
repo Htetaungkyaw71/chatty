@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAddMessageMutation } from "../redux/messageServices";
 import { VscSend } from "react-icons/vsc";
 import EmojiPicker from "emoji-picker-react";
@@ -13,6 +13,11 @@ const SendMessage = ({ roomId, recall }) => {
     message += event.emoji;
     setText(message);
   };
+
+  useEffect(() => {
+    setText("");
+  }, [roomId]);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     try {
