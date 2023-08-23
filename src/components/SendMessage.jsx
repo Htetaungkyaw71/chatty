@@ -1,13 +1,22 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useAddMessageMutation } from "../redux/messageServices";
 import { VscSend } from "react-icons/vsc";
 import EmojiPicker from "emoji-picker-react";
 
-const SendMessage = ({ roomId, recall }) => {
+const SendMessage = ({
+  roomId,
+  recall,
+  socket,
+  currentChat,
+  currentUser,
+  setMessages,
+}) => {
   const [text, setText] = useState("");
   const [showEmoji, setshowEmoji] = useState(false);
   const [addMessage] = useAddMessageMutation();
+  const [arrivalMessage, setArrivalMessage] = useState(null);
   const handleEmoji = (event) => {
     let message = text;
     message += event.emoji;
@@ -24,14 +33,43 @@ const SendMessage = ({ roomId, recall }) => {
       await addMessage({ text, roomId })
         .unwrap()
         .then((fulfilled) => {
-          console.log(fulfilled);
-          recall();
+          const data = {
+            ...fulfilled.data,
+            sender: {
+              name: currentUser.name,
+              avater: currentUser.avater,
+            },
+          };
+          socket.current.emit("send-msg", {
+            to: currentChat.otherUserId,
+            from: currentUser.id,
+            msg: data,
+          });
+          setMessages((prev) => [...prev, data]);
+          // recall();
           setText("");
         });
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("msg-recieve", (msg) => {
+        console.log(msg);
+        setArrivalMessage(msg);
+      });
+    }
+  });
+
+  useEffect(() => {
+    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage]);
+
+  // useEffect(() => {
+  //   scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages]);
 
   return (
     <>

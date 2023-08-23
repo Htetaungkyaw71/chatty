@@ -68,8 +68,7 @@ const Home = () => {
   if (isLoading) {
     return <MainLoader />;
   }
-  const contacts = data.data;
-  console.log(contacts);
+  const contacts = data?.data ?? [];
 
   const handleContactClick = async (otherUserId) => {
     try {

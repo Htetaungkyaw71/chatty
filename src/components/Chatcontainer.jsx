@@ -6,6 +6,7 @@ import Loader from "./helper/Loader";
 import { useRef } from "react";
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { io } from "socket.io-client";
 
 import Message from "./Message";
 import SendMessage from "./SendMessage";
@@ -18,9 +19,11 @@ const Chatcontainer = ({
   setroomId,
   refetch,
 }) => {
+  const socket = useRef();
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
   const [avatar, setAvatar] = useState("");
+  const [messages, setMessages] = useState([]);
 
   const {
     data,
@@ -28,7 +31,18 @@ const Chatcontainer = ({
     refetch: recall,
   } = useGetAllMessageQuery({ roomId });
 
-  const messages = data.data;
+  // const messages = data.data;
+  useEffect(() => {
+    setMessages(data.data);
+  }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io("http://localhost:5000");
+      socket.current.emit("add-user", currentUser.id);
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     const lastMessage = chatContainerRef.current.querySelector(
       ".last-message > div:last-child",
@@ -127,7 +141,14 @@ const Chatcontainer = ({
               </div>
             ))}
           </div>
-          <SendMessage roomId={roomId} recall={recall} />
+          <SendMessage
+            roomId={roomId}
+            recall={recall}
+            socket={socket}
+            currentChat={currentChat}
+            currentUser={currentUser}
+            setMessages={setMessages}
+          />
         </div>
       )}
     </div>
