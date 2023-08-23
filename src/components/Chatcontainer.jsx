@@ -31,16 +31,16 @@ const Chatcontainer = ({
     refetch: recall,
   } = useGetAllMessageQuery({ roomId });
 
-  // const messages = data.data;
   useEffect(() => {
     setMessages(data.data);
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     if (currentUser) {
       socket.current = io("http://localhost:5000");
       socket.current.emit("add-user", currentUser.id);
     }
+    recall();
   }, [currentUser]);
 
   useEffect(() => {

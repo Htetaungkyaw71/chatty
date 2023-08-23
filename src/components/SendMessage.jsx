@@ -46,7 +46,6 @@ const SendMessage = ({
             msg: data,
           });
           setMessages((prev) => [...prev, data]);
-          // recall();
           setText("");
         });
     } catch (error) {
@@ -57,7 +56,6 @@ const SendMessage = ({
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg-recieve", (msg) => {
-        console.log(msg);
         setArrivalMessage(msg);
       });
     }
@@ -66,10 +64,6 @@ const SendMessage = ({
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage]);
-
-  // useEffect(() => {
-  //   scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [messages]);
 
   return (
     <>
