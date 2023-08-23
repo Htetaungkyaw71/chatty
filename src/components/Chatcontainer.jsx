@@ -6,6 +6,7 @@ import Loader from "./helper/Loader";
 import { useRef } from "react";
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
+
 import Message from "./Message";
 import SendMessage from "./SendMessage";
 
@@ -19,6 +20,7 @@ const Chatcontainer = ({
 }) => {
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
+  const [avatar, setAvatar] = useState("");
 
   const {
     data,
@@ -35,6 +37,30 @@ const Chatcontainer = ({
       lastMessage.scrollIntoView({ behavior: "auto", block: "end" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/users/${currentChat.otherUserId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${currentUser.token}`,
+            },
+          },
+        );
+
+        const data = await response.json();
+        const { avater } = data.data;
+        setAvatar(avater);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUser();
+  }, [roomId]);
 
   if (isLoading) {
     return <Loader />;
@@ -72,7 +98,7 @@ const Chatcontainer = ({
           <div className="flex justify-between items-center border-b-[1px] p-2 border-gray-700 mb-3 ">
             <div className="flex items-center gap-3 mb-2">
               <img
-                src={`data:image/svg+xml;base64,${currentChat.otherUserAvater}`}
+                src={`data:image/svg+xml;base64,${avatar}`}
                 className="rounded-xl w-10 h-10"
               />
               {currentChat.otherUserName}

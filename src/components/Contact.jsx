@@ -7,6 +7,8 @@ import { formatDateAndTime } from "./helper/date";
 const Contact = ({ contact, currentUser }) => {
   const [roomId, setroomId] = useState(undefined);
   const { data, isLoading } = useGetAllMessageQuery({ roomId });
+  const [avatar, setAvatar] = useState("");
+
   useEffect(() => {
     const createRoom = async (otherUserId) => {
       try {
@@ -29,6 +31,30 @@ const Contact = ({ contact, currentUser }) => {
     createRoom(contact.otherUserId);
   }, []);
 
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/users/${contact.otherUserId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${currentUser.token}`,
+            },
+          },
+        );
+
+        const data = await response.json();
+        const { avater } = data.data;
+        setAvatar(avater);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUser();
+  }, []);
+
   if (isLoading) {
     return;
   }
@@ -39,7 +65,7 @@ const Contact = ({ contact, currentUser }) => {
     <div className="mt-3 p-3 rounded-xl hover:bg-[#171E3A]">
       <div className="flex gap-3 items-center">
         <img
-          src={`data:image/svg+xml;base64,${contact.otherUserAvater}`}
+          src={`data:image/svg+xml;base64,${avatar}`}
           className="rounded-xl w-10 h-10"
         />
         <div className="w-52">
