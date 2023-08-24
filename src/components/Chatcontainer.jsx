@@ -23,7 +23,6 @@ const Chatcontainer = ({
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
   const [avatar, setAvatar] = useState("");
-  const [messages, setMessages] = useState([]);
 
   const {
     data,
@@ -32,15 +31,16 @@ const Chatcontainer = ({
   } = useGetAllMessageQuery({ roomId });
 
   useEffect(() => {
-    setMessages(data.data);
+    recall();
   }, [roomId]);
+
+  const messages = data.data;
 
   useEffect(() => {
     if (currentUser) {
       socket.current = io("http://localhost:5000");
       socket.current.emit("add-user", currentUser.id);
     }
-    recall();
   }, [currentUser]);
 
   useEffect(() => {
@@ -143,11 +143,10 @@ const Chatcontainer = ({
           </div>
           <SendMessage
             roomId={roomId}
-            recall={recall}
             socket={socket}
             currentChat={currentChat}
             currentUser={currentUser}
-            setMessages={setMessages}
+            recall={recall}
           />
         </div>
       )}

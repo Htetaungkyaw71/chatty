@@ -7,16 +7,16 @@ import EmojiPicker from "emoji-picker-react";
 
 const SendMessage = ({
   roomId,
-  recall,
   socket,
   currentChat,
   currentUser,
   setMessages,
+  recall,
 }) => {
   const [text, setText] = useState("");
   const [showEmoji, setshowEmoji] = useState(false);
   const [addMessage] = useAddMessageMutation();
-  const [arrivalMessage, setArrivalMessage] = useState(null);
+  // const [arrivalMessage, setArrivalMessage] = useState(null);
   const handleEmoji = (event) => {
     let message = text;
     message += event.emoji;
@@ -45,7 +45,8 @@ const SendMessage = ({
             from: currentUser.id,
             msg: data,
           });
-          setMessages((prev) => [...prev, data]);
+          recall();
+          // setMessages((prev) => [...prev, data]);
           setText("");
         });
     } catch (error) {
@@ -55,15 +56,24 @@ const SendMessage = ({
 
   useEffect(() => {
     if (socket.current) {
-      socket.current.on("msg-recieve", (msg) => {
-        setArrivalMessage(msg);
+      const socketRef = socket.current; // Create a local variable to hold the ref value
+      socketRef.on("msg-recieve", (msg) => {
+        recall();
+        // setArrivalMessage(msg);
       });
-    }
-  });
 
-  useEffect(() => {
-    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
-  }, [arrivalMessage]);
+      // Cleanup function to remove the event listener when the component unmounts
+      return () => {
+        socketRef.off("msg-recieve"); // Use the local variable in cleanup
+      };
+    }
+  }, [socket.current]);
+
+  // useEffect(() => {
+  //   if (arrivalMessage) {
+  //     setMessages((prev) => [...prev, arrivalMessage]);
+  //   }
+  // }, [arrivalMessage]);
 
   return (
     <>
