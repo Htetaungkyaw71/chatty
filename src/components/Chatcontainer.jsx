@@ -7,7 +7,6 @@ import { useRef } from "react";
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { io } from "socket.io-client";
-
 import Message from "./Message";
 import SendMessage from "./SendMessage";
 
@@ -30,11 +29,17 @@ const Chatcontainer = ({
     refetch: recall,
   } = useGetAllMessageQuery({ roomId });
 
-  useEffect(() => {
-    recall();
-  }, [roomId]);
+  const [messagesData, setMessagesData] = useState({});
 
-  const messages = data.data;
+  useEffect(() => {
+    if (roomId && data) {
+      recall();
+      setMessagesData((prev) => ({
+        ...prev,
+        [roomId]: data.data,
+      }));
+    }
+  }, [roomId, data]);
 
   useEffect(() => {
     if (currentUser) {
@@ -50,7 +55,7 @@ const Chatcontainer = ({
     if (lastMessage) {
       lastMessage.scrollIntoView({ behavior: "auto", block: "end" });
     }
-  }, [messages]);
+  }, [messagesData]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -131,15 +136,16 @@ const Chatcontainer = ({
             className="flex-1 chat-scroll last-message  p-3 text-gray-100"
             ref={chatContainerRef}
           >
-            {messages.map((message) => (
-              <div key={message.id}>
-                <Message
-                  message={message}
-                  currentUser={currentUser}
-                  recall={recall}
-                />
-              </div>
-            ))}
+            {messagesData[roomId] &&
+              messagesData[roomId].map((message) => (
+                <div key={message.id}>
+                  <Message
+                    message={message}
+                    currentUser={currentUser}
+                    recall={recall}
+                  />
+                </div>
+              ))}
           </div>
           <SendMessage
             roomId={roomId}
@@ -147,6 +153,10 @@ const Chatcontainer = ({
             currentChat={currentChat}
             currentUser={currentUser}
             recall={recall}
+            messages={messagesData}
+            setMessages={setMessagesData}
+            // messages={messages}
+            // setMessages={setMessages}
           />
         </div>
       )}

@@ -12,17 +12,18 @@ const SendMessage = ({
   currentUser,
   setMessages,
   recall,
+  messages,
 }) => {
   const [text, setText] = useState("");
   const [showEmoji, setshowEmoji] = useState(false);
   const [addMessage] = useAddMessageMutation();
-  // const [arrivalMessage, setArrivalMessage] = useState(null);
+
   const handleEmoji = (event) => {
     let message = text;
     message += event.emoji;
     setText(message);
   };
-
+  console.log(messages);
   useEffect(() => {
     setText("");
   }, [roomId]);
@@ -45,8 +46,8 @@ const SendMessage = ({
             from: currentUser.id,
             msg: data,
           });
-          recall();
-          // setMessages((prev) => [...prev, data]);
+          const r = data.roomId;
+          setMessages((prev) => ({ ...prev, [r]: [...messages[r], data] }));
           setText("");
         });
     } catch (error) {
@@ -56,24 +57,19 @@ const SendMessage = ({
 
   useEffect(() => {
     if (socket.current) {
-      const socketRef = socket.current; // Create a local variable to hold the ref value
+      const socketRef = socket.current;
       socketRef.on("msg-recieve", (msg) => {
-        recall();
-        // setArrivalMessage(msg);
+        setMessages((prevMessages) => ({
+          ...prevMessages,
+          [msg.roomId]: [...prevMessages[msg.roomId], msg],
+        }));
       });
 
-      // Cleanup function to remove the event listener when the component unmounts
       return () => {
-        socketRef.off("msg-recieve"); // Use the local variable in cleanup
+        socketRef.off("msg-recieve");
       };
     }
-  }, [socket.current]);
-
-  // useEffect(() => {
-  //   if (arrivalMessage) {
-  //     setMessages((prev) => [...prev, arrivalMessage]);
-  //   }
-  // }, [arrivalMessage]);
+  }, [socket.current, setMessages]);
 
   return (
     <>
