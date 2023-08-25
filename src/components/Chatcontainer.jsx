@@ -6,7 +6,6 @@ import Loader from "./helper/Loader";
 import { useRef } from "react";
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { io } from "socket.io-client";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
 
@@ -17,8 +16,9 @@ const Chatcontainer = ({
   currentUser,
   setroomId,
   refetch,
+  socket,
+  onlineUsers,
 }) => {
-  const socket = useRef();
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
   const [avatar, setAvatar] = useState("");
@@ -40,13 +40,6 @@ const Chatcontainer = ({
       }));
     }
   }, [roomId, data]);
-
-  useEffect(() => {
-    if (currentUser) {
-      socket.current = io("http://localhost:5000");
-      socket.current.emit("add-user", currentUser.id);
-    }
-  }, [currentUser]);
 
   useEffect(() => {
     const lastMessage = chatContainerRef.current.querySelector(
@@ -121,6 +114,9 @@ const Chatcontainer = ({
                 className="rounded-xl w-10 h-10"
               />
               {currentChat.otherUserName}
+              {onlineUsers.includes(currentChat.otherUserId)
+                ? "online"
+                : "offline"}
             </div>
             <div className="flex items-center gap-4">
               <button>
@@ -143,6 +139,10 @@ const Chatcontainer = ({
                     message={message}
                     currentUser={currentUser}
                     recall={recall}
+                    socket={socket}
+                    currentChat={currentChat}
+                    messages={messagesData}
+                    setMessages={setMessagesData}
                   />
                 </div>
               ))}
@@ -155,8 +155,6 @@ const Chatcontainer = ({
             recall={recall}
             messages={messagesData}
             setMessages={setMessagesData}
-            // messages={messages}
-            // setMessages={setMessages}
           />
         </div>
       )}

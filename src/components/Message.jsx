@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatDateAndTime } from "./helper/date";
 import { AiOutlineEdit } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
@@ -10,7 +10,14 @@ import {
 } from "../redux/messageServices";
 import EmojiPicker from "emoji-picker-react";
 
-const Message = ({ message, currentUser, recall }) => {
+const Message = ({
+  message,
+  currentUser,
+  socket,
+  currentChat,
+  messages,
+  setMessages,
+}) => {
   const [isHovered, setIsHovered] = useState(null);
   const [hoverTimeout, setHoverTimeout] = useState(null);
   const [deleteMessage] = useDeleteMessageMutation();
@@ -47,18 +54,60 @@ const Message = ({ message, currentUser, recall }) => {
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    console.log(message.id);
     try {
       await deleteMessage({ id: message.id })
         .unwrap()
         .then((fulfilled) => {
           console.log(fulfilled);
-          recall();
+          socket.current.emit("del-msg", {
+            to: currentChat.otherUserId,
+            from: currentUser.id,
+            id: message.id,
+          });
+          const filter = messages[message.roomId].filter(
+            (msg) => msg.id !== message.id,
+          );
+          setMessages((prev) => ({ ...prev, [message.roomId]: filter }));
         });
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (socket.current) {
+      const socketRef = socket.current;
+
+      socketRef.on("del-recieve", (id) => {
+        const filter = messages[message.roomId].filter((msg) => msg.id !== id);
+        setMessages((prev) => ({ ...prev, [message.roomId]: filter }));
+      });
+
+      return () => {
+        socketRef.off("del-recieve");
+      };
+    }
+  }, [socket.current, setMessages]);
+
+  useEffect(() => {
+    if (socket.current) {
+      const socketRef = socket.current;
+
+      socketRef.on("edit-recieve", (msg) => {
+        const filter = messages[message.roomId].map((obj) => {
+          if (obj.id === message.id) {
+            return { ...obj, text: msg };
+          }
+          return obj;
+        });
+        setMessages((prev) => ({ ...prev, [message.roomId]: filter }));
+      });
+
+      return () => {
+        socketRef.off("edit-recieve");
+      };
+    }
+  }, [socket.current, setMessages]);
 
   const handleEdit = () => {
     setshowEmoji(false);
@@ -74,7 +123,18 @@ const Message = ({ message, currentUser, recall }) => {
         .unwrap()
         .then((fulfilled) => {
           console.log(fulfilled);
-          recall();
+          socket.current.emit("edit-msg", {
+            to: currentChat.otherUserId,
+            from: currentUser.id,
+            msg: messageText,
+          });
+          const filter = messages[message.roomId].map((obj) => {
+            if (obj.id === message.id) {
+              return { ...obj, text: messageText };
+            }
+            return obj;
+          });
+          setMessages((prev) => ({ ...prev, [message.roomId]: filter }));
           setshowEmoji(false);
           setIsEditable(!isEditable);
         });

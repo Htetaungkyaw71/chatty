@@ -1,7 +1,7 @@
 import Navbar from "./Navbar";
 import { useGetAllContactQuery } from "../redux/contactServices";
 import Contact from "./Contact";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { loadState } from "../redux/localstorage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -10,8 +10,11 @@ import Welcome from "./helper/Welcome";
 import MainLoader from "./helper/MainLoader";
 import Profile from "./Profile";
 import Results from "./Results";
+import { io } from "socket.io-client";
 
 const Home = () => {
+  const socket = useRef();
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const navigate = useNavigate();
   const [allusers, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -29,6 +32,27 @@ const Home = () => {
     }
     refetch();
   }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io("http://localhost:5000");
+      socket.current.emit("add-user", currentUser.id);
+      console.log(currentUser.id);
+      socket.current.on("user-online", (userId) => {
+        console.log("on");
+        setOnlineUsers((prevUsers) => [...prevUsers, userId]);
+      });
+
+      socket.current.on("user-offline", (userId) => {
+        setOnlineUsers((prevUsers) => prevUsers.filter((id) => id !== userId));
+      });
+      return () => {
+        socket.current.disconnect();
+      };
+    }
+  }, [currentUser]);
+
+  console.log("online", onlineUsers);
 
   useEffect(() => {
     const user = loadState();
@@ -136,6 +160,8 @@ const Home = () => {
               roomId={roomId}
               currentUser={currentUser}
               refetch={refetch}
+              socket={socket}
+              onlineUsers={onlineUsers}
             />
           ) : (
             <Welcome currentUser={currentUser ? currentUser : "Loading"} />
