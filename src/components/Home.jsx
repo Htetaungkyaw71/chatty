@@ -1,7 +1,8 @@
+/* eslint-disable react/prop-types */
 import Navbar from "./Navbar";
 import { useGetAllContactQuery } from "../redux/contactServices";
 import Contact from "./Contact";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { loadState } from "../redux/localstorage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -10,10 +11,8 @@ import Welcome from "./helper/Welcome";
 import MainLoader from "./helper/MainLoader";
 import Profile from "./Profile";
 import Results from "./Results";
-import { io } from "socket.io-client";
 
-const Home = () => {
-  const socket = useRef();
+const Home = ({ socket }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const navigate = useNavigate();
   const [allusers, setUsers] = useState([]);
@@ -35,24 +34,24 @@ const Home = () => {
 
   useEffect(() => {
     if (currentUser) {
-      socket.current = io("http://localhost:5000");
-      socket.current.emit("add-user", currentUser.id);
-      console.log(currentUser.id);
-      socket.current.on("user-online", (userId) => {
-        console.log("on");
-        setOnlineUsers((prevUsers) => [...prevUsers, userId]);
+      socket.emit("add-user", currentUser.id);
+      socket.on("connect", () => {
+        console.log("Socket connected:", socket.id);
       });
-
-      socket.current.on("user-offline", (userId) => {
-        setOnlineUsers((prevUsers) => prevUsers.filter((id) => id !== userId));
+      socket.emit("newUser", {
+        id: currentUser.id,
+        socketID: socket.id,
       });
-      return () => {
-        socket.current.disconnect();
-      };
     }
   }, [currentUser]);
 
-  console.log("online", onlineUsers);
+  useEffect(() => {
+    if (socket) {
+      socket.on("newUserResponse", (data) => setOnlineUsers(data));
+    }
+  }, [socket, onlineUsers]);
+
+  console.log("onlineUsers", onlineUsers);
 
   useEffect(() => {
     const user = loadState();
@@ -137,7 +136,11 @@ const Home = () => {
                     handleContactClick(contact.otherUserId);
                   }}
                 >
-                  <Contact contact={contact} currentUser={currentUser} />
+                  <Contact
+                    contact={contact}
+                    currentUser={currentUser}
+                    onlineUsers={onlineUsers}
+                  />
                 </button>
               ))}
             </div>

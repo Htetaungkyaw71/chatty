@@ -59,7 +59,7 @@ const Message = ({
         .unwrap()
         .then((fulfilled) => {
           console.log(fulfilled);
-          socket.current.emit("del-msg", {
+          socket.emit("del-msg", {
             to: currentChat.otherUserId,
             from: currentUser.id,
             id: message.id,
@@ -75,8 +75,8 @@ const Message = ({
   };
 
   useEffect(() => {
-    if (socket.current) {
-      const socketRef = socket.current;
+    if (socket) {
+      const socketRef = socket;
 
       socketRef.on("del-recieve", (id) => {
         const filter = messages[message.roomId].filter((msg) => msg.id !== id);
@@ -87,16 +87,16 @@ const Message = ({
         socketRef.off("del-recieve");
       };
     }
-  }, [socket.current, setMessages]);
+  }, [socket, setMessages]);
 
   useEffect(() => {
-    if (socket.current) {
-      const socketRef = socket.current;
+    if (socket) {
+      const socketRef = socket;
 
-      socketRef.on("edit-recieve", (msg) => {
+      socketRef.on("edit-recieve", (data) => {
         const filter = messages[message.roomId].map((obj) => {
-          if (obj.id === message.id) {
-            return { ...obj, text: msg };
+          if (obj.id === data.id) {
+            return { ...obj, text: data.msg };
           }
           return obj;
         });
@@ -107,7 +107,7 @@ const Message = ({
         socketRef.off("edit-recieve");
       };
     }
-  }, [socket.current, setMessages]);
+  }, [socket, setMessages]);
 
   const handleEdit = () => {
     setshowEmoji(false);
@@ -123,9 +123,10 @@ const Message = ({
         .unwrap()
         .then((fulfilled) => {
           console.log(fulfilled);
-          socket.current.emit("edit-msg", {
+          socket.emit("edit-msg", {
             to: currentChat.otherUserId,
             from: currentUser.id,
+            id: message.id,
             msg: messageText,
           });
           const filter = messages[message.roomId].map((obj) => {

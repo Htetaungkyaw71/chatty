@@ -22,6 +22,8 @@ const Chatcontainer = ({
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
   const [avatar, setAvatar] = useState("");
+  const [typingStatus, setTypingStatus] = useState(false);
+  const typeMessage = useRef(null);
 
   const {
     data,
@@ -30,6 +32,10 @@ const Chatcontainer = ({
   } = useGetAllMessageQuery({ roomId });
 
   const [messagesData, setMessagesData] = useState({});
+
+  useEffect(() => {
+    typeMessage.current?.scrollIntoView({ behavior: "smooth" });
+  }, [typingStatus]);
 
   useEffect(() => {
     if (roomId && data) {
@@ -74,6 +80,10 @@ const Chatcontainer = ({
     getUser();
   }, [roomId]);
 
+  useEffect(() => {
+    socket.on("typingResponse", (data) => setTypingStatus(data));
+  }, [socket]);
+
   if (isLoading) {
     return <Loader />;
   }
@@ -98,6 +108,10 @@ const Chatcontainer = ({
     }
   };
 
+  const isIdIncluded =
+    onlineUsers &&
+    onlineUsers.some((obj) => obj.id === currentChat.otherUserId);
+
   return (
     <div>
       {dot && (
@@ -114,9 +128,9 @@ const Chatcontainer = ({
                 className="rounded-xl w-10 h-10"
               />
               {currentChat.otherUserName}
-              {onlineUsers.includes(currentChat.otherUserId)
-                ? "online"
-                : "offline"}
+              {isIdIncluded && (
+                <span className=" bg-green-400 w-2 h-2 rounded-full"></span>
+              )}
             </div>
             <div className="flex items-center gap-4">
               <button>
@@ -146,6 +160,21 @@ const Chatcontainer = ({
                   />
                 </div>
               ))}
+            {typingStatus && (
+              <div className="flex gap-3 items-center mt-5" ref={typeMessage}>
+                <img
+                  src={`data:image/svg+xml;base64,${avatar}`}
+                  alt="Sender Avatar"
+                  className="rounded-xl w-10 h-10"
+                />
+                <div className="mloader">
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                </div>
+              </div>
+            )}
           </div>
           <SendMessage
             roomId={roomId}

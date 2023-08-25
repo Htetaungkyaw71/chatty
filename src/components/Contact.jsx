@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useGetAllMessageQuery } from "../redux/messageServices";
 import { formatDateAndTime } from "./helper/date";
 
-const Contact = ({ contact, currentUser }) => {
+const Contact = ({ contact, currentUser, onlineUsers }) => {
   const [roomId, setroomId] = useState(undefined);
   const { data, isLoading } = useGetAllMessageQuery({ roomId });
   const [avatar, setAvatar] = useState("");
@@ -61,6 +61,9 @@ const Contact = ({ contact, currentUser }) => {
   const results = data.data;
   const lastMessage = results[results.length - 1];
 
+  const isIdIncluded =
+    onlineUsers && onlineUsers.some((obj) => obj.id === contact.otherUserId);
+
   return (
     <div className="mt-3 p-3 rounded-xl hover:bg-[#171E3A]">
       <div className="flex gap-3 items-center">
@@ -70,7 +73,13 @@ const Contact = ({ contact, currentUser }) => {
         />
         <div className="w-52">
           <div className="flex justify-between">
-            <h1>{contact.otherUserName}</h1>
+            <h1 className="flex items-center ">
+              {contact.otherUserName}
+              {isIdIncluded && (
+                <span className=" bg-green-400 ml-2 w-2 h-2 rounded-full inline-block"></span>
+              )}
+            </h1>
+
             <h1 className="text-sm text-gray-500 mt-1">
               {lastMessage && formatDateAndTime(lastMessage.createdAt)}
             </h1>

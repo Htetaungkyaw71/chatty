@@ -4,8 +4,10 @@ import Signin from "./components/Signin";
 import Signup from "./components/Signup";
 import Protect from "./components/Protext";
 import Avatar from "./components/Avatar";
+import { io } from "socket.io-client";
 
 function App() {
+  const socket = io("http://localhost:5000");
   return (
     <BrowserRouter>
       <Routes>
@@ -13,7 +15,7 @@ function App() {
           path="/"
           element={
             <Protect>
-              <Home />
+              <Home socket={socket} />
             </Protect>
           }
         />

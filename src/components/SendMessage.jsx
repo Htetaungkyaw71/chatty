@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAddMessageMutation } from "../redux/messageServices";
 import { VscSend } from "react-icons/vsc";
 import EmojiPicker from "emoji-picker-react";
@@ -23,10 +23,21 @@ const SendMessage = ({
     message += event.emoji;
     setText(message);
   };
-  console.log(messages);
   useEffect(() => {
     setText("");
   }, [roomId]);
+
+  const typingTimeoutRef = useRef(null);
+
+  const handleTyping = () => {
+    clearTimeout(typingTimeoutRef.current);
+
+    socket.emit("typing", true);
+
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("typing", false);
+    }, 2000);
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -41,7 +52,7 @@ const SendMessage = ({
               avater: currentUser.avater,
             },
           };
-          socket.current.emit("send-msg", {
+          socket.emit("send-msg", {
             to: currentChat.otherUserId,
             from: currentUser.id,
             msg: data,
@@ -56,9 +67,10 @@ const SendMessage = ({
   };
 
   useEffect(() => {
-    if (socket.current) {
-      const socketRef = socket.current;
+    if (socket) {
+      const socketRef = socket;
       socketRef.on("msg-recieve", (msg) => {
+        console.log("msg", msg);
         setMessages((prevMessages) => ({
           ...prevMessages,
           [msg.roomId]: [...prevMessages[msg.roomId], msg],
@@ -69,7 +81,7 @@ const SendMessage = ({
         socketRef.off("msg-recieve");
       };
     }
-  }, [socket.current, setMessages]);
+  }, [socket, setMessages]);
 
   return (
     <>
@@ -87,6 +99,7 @@ const SendMessage = ({
           className=" p-2 w-full bg-[#171E3A] outline-none rounded-xl rounded-r-none"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleTyping}
         />
         <button
           onClick={handleSendMessage}
