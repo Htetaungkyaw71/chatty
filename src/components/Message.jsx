@@ -17,6 +17,7 @@ const Message = ({
   currentChat,
   messages,
   setMessages,
+  isIdIncluded,
 }) => {
   const [isHovered, setIsHovered] = useState(null);
   const [hoverTimeout, setHoverTimeout] = useState(null);
@@ -154,12 +155,15 @@ const Message = ({
       }
     >
       {message.senderId !== currentUser.id && (
-        <div className="flex-shrink-0">
+        <div className="flex">
           <img
             src={`data:image/svg+xml;base64,${message.sender.avater}`}
             alt="Sender Avatar"
             className="rounded-xl w-10 h-10"
           />
+          {isIdIncluded && (
+            <span className="bg-green-400 w-[10px] h-[10px] mt-[26px] -ml-2 mr-[2px] inline-block rounded-full"></span>
+          )}
         </div>
       )}
 
@@ -221,14 +225,14 @@ const Message = ({
         </>
       ) : (
         <div className="text-left">
-          <div className="font-semibold">
+          <div className="text-[18px]">
             {message.sender.name}
             <span className="text-sm text-gray-500 font-medium ml-3">
               {formatDateAndTime(message.createdAt)}
             </span>
           </div>
 
-          <div className="text-md text-gray-300">{message.text}</div>
+          <div className="text-[16px] text-gray-300">{message.text}</div>
         </div>
       )}
     </div>

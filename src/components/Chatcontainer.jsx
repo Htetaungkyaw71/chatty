@@ -18,6 +18,8 @@ const Chatcontainer = ({
   refetch,
   socket,
   onlineUsers,
+  setLastMessage,
+  finalMessage,
 }) => {
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
@@ -122,15 +124,22 @@ const Chatcontainer = ({
       {currentChat && (
         <div className="flex flex-col h-[80vh] ">
           <div className="flex justify-between items-center border-b-[1px] p-2 border-gray-700 mb-3 ">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center  mb-2">
               <img
                 src={`data:image/svg+xml;base64,${avatar}`}
                 className="rounded-xl w-10 h-10"
               />
-              {currentChat.otherUserName}
-              {isIdIncluded && (
-                <span className=" bg-green-400 w-2 h-2 rounded-full"></span>
+              {isIdIncluded ? (
+                <span className="bg-green-400 w-[10px] h-[10px] mt-6 -ml-2 mr-3 rounded-full"></span>
+              ) : (
+                <span className="w-[10px] h-[10px] mt-6 -ml-2 mr-3 rounded-full"></span>
               )}
+              <div>
+                <h1 className="text-[16px]"> {currentChat.otherUserName}</h1>
+                {isIdIncluded && (
+                  <h1 className="text-sm text-gray-400">Active now</h1>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <button>
@@ -143,7 +152,7 @@ const Chatcontainer = ({
           </div>
 
           <div
-            className="flex-1 chat-scroll last-message  p-3 text-gray-100"
+            className="flex-1 chat-scroll last-message p-3 text-gray-100"
             ref={chatContainerRef}
           >
             {messagesData[roomId] &&
@@ -157,6 +166,7 @@ const Chatcontainer = ({
                     currentChat={currentChat}
                     messages={messagesData}
                     setMessages={setMessagesData}
+                    isIdIncluded={isIdIncluded}
                   />
                 </div>
               ))}
@@ -184,6 +194,8 @@ const Chatcontainer = ({
             recall={recall}
             messages={messagesData}
             setMessages={setMessagesData}
+            setLastMessage={setLastMessage}
+            finalMessage={finalMessage}
           />
         </div>
       )}

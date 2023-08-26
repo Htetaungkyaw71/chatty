@@ -13,6 +13,8 @@ const SendMessage = ({
   setMessages,
   recall,
   messages,
+  setLastMessage,
+  finalMessage,
 }) => {
   const [text, setText] = useState("");
   const [showEmoji, setshowEmoji] = useState(false);
@@ -39,6 +41,8 @@ const SendMessage = ({
     }, 2000);
   };
 
+  console.log(roomId);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     try {
@@ -59,7 +63,16 @@ const SendMessage = ({
           });
           const r = data.roomId;
           setMessages((prev) => ({ ...prev, [r]: [...messages[r], data] }));
+
           setText("");
+
+          if (finalMessage.length > 0) {
+            let filter = finalMessage.filter((f) => f.id !== roomId);
+            let newArr = [...filter, { id: roomId, msg: data, status: true }];
+            setLastMessage(newArr);
+          } else {
+            setLastMessage([{ id: roomId, msg: data, status: true }]);
+          }
         });
     } catch (error) {
       console.log(error);
@@ -75,6 +88,17 @@ const SendMessage = ({
           ...prevMessages,
           [msg.roomId]: [...prevMessages[msg.roomId], msg],
         }));
+
+        if (finalMessage.length > 0) {
+          let newArr;
+          let filter = finalMessage.filter((f) => f.id !== msg.roomId);
+          console.log(roomId);
+          newArr = [...filter, { id: msg.roomId, msg, status: false }];
+
+          setLastMessage(newArr);
+        } else {
+          setLastMessage([{ id: msg.roomId, msg, status: false }]);
+        }
       });
 
       return () => {
@@ -96,7 +120,7 @@ const SendMessage = ({
         <input
           placeholder="Type here"
           type="text"
-          className=" p-2 w-full bg-[#171E3A] outline-none rounded-xl rounded-r-none"
+          className="p-2 w-full bg-[#171E3A] outline-none rounded-xl rounded-r-none"
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleTyping}

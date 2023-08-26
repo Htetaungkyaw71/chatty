@@ -183,3 +183,17 @@ body {
 .dot:nth-child(4) {
   animation-delay: 0.3s;
 }
+
+@media (min-width: 768px) {
+  .responsive_chat {
+    display: block;
+    grid-column: span 1 / span 1;
+  }
+}
+
+@media (min-width: 640px) {
+  .responsive_chat {
+    display: block;
+    grid-column: span 1 / span 1;
+  }
+}

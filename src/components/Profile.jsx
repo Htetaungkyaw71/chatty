@@ -3,11 +3,26 @@
 import { Link } from "react-router-dom";
 import { FiEdit2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { BiLeftArrowAlt } from "react-icons/bi";
 
-const Profile = ({ currentUser }) => {
+const Profile = ({ currentUser, setProfile }) => {
   const navigate = useNavigate();
+
+  const handleback = (e) => {
+    e.preventDefault();
+    setProfile(false);
+  };
+
   return (
     <div className="p-3 bg-[#1E2746] rounded-xl shadow-2xl shadow-[#171E3A]">
+      <div>
+        <button
+          onClick={handleback}
+          className="hover:bg-[#171E3A] rounded-full p-3"
+        >
+          <BiLeftArrowAlt className="text-2xl" />
+        </button>
+      </div>
       <div className="flex justify-center text-center pt-20">
         <div>
           <img
