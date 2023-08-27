@@ -27,6 +27,7 @@ const Home = ({ socket }) => {
   const [toogle, setToogle] = useState(false);
   const [profile, setProfile] = useState(false);
   const [box, setBox] = useState(false);
+  const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
     const user = loadState();
@@ -48,7 +49,7 @@ const Home = ({ socket }) => {
         socketID: socket.id,
       });
     }
-  }, [currentUser]);
+  }, [currentUser, socket]);
 
   useEffect(() => {
     if (socket) {
@@ -97,11 +98,8 @@ const Home = ({ socket }) => {
         setBox(false);
       }
     };
-
     updateBoxState();
-
     window.addEventListener("resize", updateBoxState);
-
     return () => {
       window.removeEventListener("resize", updateBoxState);
     };
@@ -113,27 +111,13 @@ const Home = ({ socket }) => {
   const contacts = data?.data ?? [];
 
   const handleContactClick = async (otherUserId) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/createroom", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${currentUser.token}`,
-        },
-        body: JSON.stringify({ otherUserId }),
-      });
-
-      const data = await response.json();
-      const roomId = data.roomId;
-      setroomId(roomId);
-      finalMessage.map((f) => {
-        if (f.id === roomId) {
-          return (f.status = true);
-        }
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    const rId = rooms.find((room) => room.id === otherUserId);
+    setroomId(rId.roomId);
+    finalMessage.map((f) => {
+      if (f.id === rId.roomId) {
+        return (f.status = true);
+      }
+    });
   };
 
   const handleHamburger = (e) => {
@@ -214,6 +198,8 @@ const Home = ({ socket }) => {
                       currentUser={currentUser}
                       onlineUsers={onlineUsers}
                       finalMessage={finalMessage}
+                      setRooms={setRooms}
+                      allusers={allusers}
                     />
                   </button>
                 ))}
@@ -221,7 +207,7 @@ const Home = ({ socket }) => {
             ) : (
               <div className="h-[70vh] chat-scroll">
                 {searchResults.map((user) => (
-                  <div key={user.id}>
+                  <div key={user.id} className="w-full">
                     <Results user={user} refetch={refetch} />
                   </div>
                 ))}
@@ -248,6 +234,7 @@ const Home = ({ socket }) => {
               finalMessage={finalMessage}
               setBox={setBox}
               box={box}
+              allusers={allusers}
             />
           ) : (
             <Welcome currentUser={currentUser ? currentUser : "Loading"} />

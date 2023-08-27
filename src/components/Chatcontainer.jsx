@@ -23,6 +23,7 @@ const Chatcontainer = ({
   finalMessage,
   setBox,
   box,
+  allusers,
 }) => {
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
@@ -62,27 +63,10 @@ const Chatcontainer = ({
   }, [messagesData]);
 
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/users/${currentChat.otherUserId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${currentUser.token}`,
-            },
-          },
-        );
-
-        const data = await response.json();
-        const { avater } = data.data;
-        setAvatar(avater);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getUser();
+    const getUser = allusers.find(
+      (user) => user.id === currentChat.otherUserId,
+    );
+    setAvatar(getUser.avater);
   }, [roomId]);
 
   useEffect(() => {

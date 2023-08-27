@@ -5,7 +5,7 @@ const Results = ({ user, refetch }) => {
   return (
     <div
       key={user.id}
-      className="bg-[#171E3A] w-64 mt-4 p-3 rounded-xl flex justify-between items-center"
+      className="bg-[#171E3A] mt-4 p-3 rounded-xl flex justify-between items-center"
     >
       <div className="flex gap-2">
         <img

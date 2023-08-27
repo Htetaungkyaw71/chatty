@@ -11,7 +11,6 @@ const SendMessage = ({
   currentChat,
   currentUser,
   setMessages,
-  recall,
   messages,
   setLastMessage,
   finalMessage,
@@ -127,7 +126,10 @@ const SendMessage = ({
         />
         <button
           onClick={handleSendMessage}
-          className="bg-[#171E3A] text-white p-2 text-xl rounded-r-xl"
+          className={`bg-[#171E3A] p-2 text-xl rounded-r-xl ${
+            text.length === 0 ? "text-gray-400" : "text-white"
+          }`}
+          disabled={text.length === 0}
         >
           <VscSend />
         </button>

@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import { useGetAllMessageQuery } from "../redux/messageServices";
 import { formatDateAndTimeForContact } from "./helper/date";
 
-const Contact = ({ contact, currentUser, onlineUsers, finalMessage }) => {
+const Contact = ({
+  contact,
+  currentUser,
+  onlineUsers,
+  finalMessage,
+  setRooms,
+  allusers,
+}) => {
   const [roomId, setroomId] = useState(undefined);
   const { data, isLoading } = useGetAllMessageQuery({ roomId });
   const [avatar, setAvatar] = useState("");
@@ -23,36 +30,16 @@ const Contact = ({ contact, currentUser, onlineUsers, finalMessage }) => {
 
         const data = await response.json();
         const roomId = data.roomId;
+        setRooms((prev) => [...prev, { id: otherUserId, roomId }]);
         setroomId(roomId);
       } catch (error) {
         console.error(error);
       }
     };
     createRoom(contact.otherUserId);
-  }, []);
 
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/users/${contact.otherUserId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${currentUser.token}`,
-            },
-          },
-        );
-
-        const data = await response.json();
-        const { avater } = data.data;
-        setAvatar(avater);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getUser();
+    const getUser = allusers.find((user) => user.id === contact.otherUserId);
+    setAvatar(getUser.avater);
   }, []);
 
   if (isLoading) {
@@ -64,10 +51,7 @@ const Contact = ({ contact, currentUser, onlineUsers, finalMessage }) => {
   const isIdIncluded =
     onlineUsers && onlineUsers.some((obj) => obj.id === contact.otherUserId);
 
-  console.log("fm", finalMessage);
-
   const lastM = finalMessage && finalMessage.find((m) => m.id === roomId);
-  console.log("lastm", lastM);
 
   return (
     <div className="mt-3 p-3 rounded-xl hover:bg-[#171E3A]">
