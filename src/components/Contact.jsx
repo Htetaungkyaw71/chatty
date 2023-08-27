@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useGetAllMessageQuery } from "../redux/messageServices";
-import { formatDateAndTime } from "./helper/date";
+import { formatDateAndTimeForContact } from "./helper/date";
 
 const Contact = ({ contact, currentUser, onlineUsers, finalMessage }) => {
   const [roomId, setroomId] = useState(undefined);
@@ -97,7 +97,7 @@ const Contact = ({ contact, currentUser, onlineUsers, finalMessage }) => {
         </div>
 
         <h1 className="text-sm text-gray-500 mt-1">
-          {lastMessage && formatDateAndTime(lastMessage.createdAt)}
+          {lastMessage && formatDateAndTimeForContact(lastMessage.createdAt)}
         </h1>
       </div>
     </div>

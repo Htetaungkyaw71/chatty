@@ -125,7 +125,7 @@ const Chatcontainer = ({
   return (
     <div>
       {dot && (
-        <div className="z-10 absolute right-64 bg-white text-black p-3 top-14 rounded-xl rounded-bl-none">
+        <div className="z-10 absolute right-5 bg-white text-[#171E3A] p-3 top-14 rounded-xl ">
           <button onClick={removeContact}>Remove contact</button>
         </div>
       )}
