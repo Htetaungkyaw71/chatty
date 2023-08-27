@@ -91,6 +91,22 @@ const Home = ({ socket }) => {
     }
   }, [search, data]);
 
+  useEffect(() => {
+    const updateBoxState = () => {
+      if (window.innerWidth > 1023) {
+        setBox(false);
+      }
+    };
+
+    updateBoxState();
+
+    window.addEventListener("resize", updateBoxState);
+
+    return () => {
+      window.removeEventListener("resize", updateBoxState);
+    };
+  }, []);
+
   if (isLoading) {
     return <MainLoader />;
   }
@@ -141,7 +157,11 @@ const Home = ({ socket }) => {
             setProfile={setProfile}
           />
         ) : (
-          <div className="p-3 bg-[#1E2746] rounded-xl shadow-2xl shadow-[#171E3A] ">
+          <div
+            className={`p-3 bg-[#1E2746] rounded-xl shadow-2xl shadow-[#171E3A] ${
+              box && "hidden"
+            }`}
+          >
             <form className="flex items-center gap-3">
               <button onClick={handleHamburger}>
                 <RxHamburgerMenu className="text-2xl ml-4 " />
@@ -181,7 +201,10 @@ const Home = ({ socket }) => {
                     className="block w-full"
                     key={contact.id}
                     onClick={() => {
-                      setBox(true);
+                      if (window.innerWidth < 1023) {
+                        setBox(true);
+                      }
+
                       setCurrentChat(contact);
                       handleContactClick(contact.otherUserId);
                     }}
@@ -208,8 +231,8 @@ const Home = ({ socket }) => {
         )}
 
         <div
-          className={`col-span-3 bg-[#1E2746] rounded-xl shadow-2xl text-white p-3 hidden sm:hidden md:hidden lg:block xl:block ${
-            box && "responsive_chat"
+          className={`col-span-3 bg-[#1E2746] rounded-xl shadow-2xl text-white p-3 ${
+            box ? "block" : "hidden sm:hidden md:hidden lg:block xl:block"
           }`}
         >
           {roomId ? (
@@ -223,6 +246,8 @@ const Home = ({ socket }) => {
               onlineUsers={onlineUsers}
               setLastMessage={setLastMessage}
               finalMessage={finalMessage}
+              setBox={setBox}
+              box={box}
             />
           ) : (
             <Welcome currentUser={currentUser ? currentUser : "Loading"} />

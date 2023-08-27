@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { BiSolidVideo } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Message from "./Message";
+import { BiLeftArrowAlt } from "react-icons/bi";
 import SendMessage from "./SendMessage";
 
 /* eslint-disable react/prop-types */
@@ -20,6 +21,8 @@ const Chatcontainer = ({
   onlineUsers,
   setLastMessage,
   finalMessage,
+  setBox,
+  box,
 }) => {
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
@@ -114,6 +117,11 @@ const Chatcontainer = ({
     onlineUsers &&
     onlineUsers.some((obj) => obj.id === currentChat.otherUserId);
 
+  const handleback = (e) => {
+    e.preventDefault();
+    setBox(false);
+  };
+
   return (
     <div>
       {dot && (
@@ -122,25 +130,36 @@ const Chatcontainer = ({
         </div>
       )}
       {currentChat && (
-        <div className="flex flex-col h-[80vh] ">
+        <div className="flex flex-col  h-[80vh] ">
           <div className="flex justify-between items-center border-b-[1px] p-2 border-gray-700 mb-3 ">
-            <div className="flex items-center  mb-2">
-              <img
-                src={`data:image/svg+xml;base64,${avatar}`}
-                className="rounded-xl w-10 h-10"
-              />
-              {isIdIncluded ? (
-                <span className="bg-green-400 w-[10px] h-[10px] mt-6 -ml-2 mr-3 rounded-full"></span>
-              ) : (
-                <span className="w-[10px] h-[10px] mt-6 -ml-2 mr-3 rounded-full"></span>
+            <div className="flex items-center gap-2">
+              {box && (
+                <button
+                  onClick={handleback}
+                  className="hover:bg-[#171E3A] rounded-full p-[10px] -mt-[6px] inline-block "
+                >
+                  <BiLeftArrowAlt className="text-2xl" />
+                </button>
               )}
-              <div>
-                <h1 className="text-[16px]"> {currentChat.otherUserName}</h1>
-                {isIdIncluded && (
-                  <h1 className="text-sm text-gray-400">Active now</h1>
+              <div className="flex items-center mb-2">
+                <img
+                  src={`data:image/svg+xml;base64,${avatar}`}
+                  className="rounded-xl w-10 h-10"
+                />
+                {isIdIncluded ? (
+                  <span className="bg-green-400 w-[10px] h-[10px] mt-6 -ml-2 mr-3 rounded-full"></span>
+                ) : (
+                  <span className="w-[10px] h-[10px] mt-6 -ml-2 mr-3 rounded-full"></span>
                 )}
+                <div>
+                  <h1 className="text-[16px]"> {currentChat.otherUserName}</h1>
+                  {isIdIncluded && (
+                    <h1 className="text-sm text-gray-400">Active now</h1>
+                  )}
+                </div>
               </div>
             </div>
+
             <div className="flex items-center gap-4">
               <button>
                 <BiSolidVideo className="text-2xl" />
