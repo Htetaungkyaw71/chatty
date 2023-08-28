@@ -197,11 +197,19 @@ const Message = ({
                 />
               </div>
             ) : (
-              message.text
+              <>
+                {message.image && (
+                  <img
+                    src={message.image}
+                    className="w-32 h-40 inline-block rounded-xl mb-2"
+                  />
+                )}
+                <h1>{message.text}</h1>
+              </>
             )}
             {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
             {isHovered === message.id && (
-              <div className="flex bg-white text-gray-500 shadow-lg absolute top-0 right-0 mt-8  mr-2 w-24 rounded-xl">
+              <div className="flex bg-white text-gray-500 shadow-lg absolute top-0 right-0 mt-8 mr-2 w-24 rounded-xl">
                 <button
                   className="p-2 text-center hover:bg-gray-300 w-full rounded-l-xl"
                   onClick={handleEdit}
@@ -210,7 +218,7 @@ const Message = ({
                 </button>
                 <hr />
                 <button
-                  className=" p-2 text-center hover:bg-gray-300 w-full rounded-r-xl"
+                  className="p-2 text-center hover:bg-gray-300 w-full rounded-r-xl"
                   onClick={handleDelete}
                 >
                   <BsTrash className="inline text-xl" />
@@ -231,8 +239,13 @@ const Message = ({
               {formatDateAndTime(message.createdAt)}
             </span>
           </div>
-
           <div className="text-[16px] text-gray-300">{message.text}</div>
+          {message.image && (
+            <img
+              src={message.image}
+              className="w-32 h-40 inline-block rounded-xl mb-2"
+            />
+          )}
         </div>
       )}
     </div>

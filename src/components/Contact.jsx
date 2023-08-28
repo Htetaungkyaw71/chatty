@@ -45,6 +45,7 @@ const Contact = ({
   if (isLoading) {
     return;
   }
+
   const results = data.data;
   const lastMessage = results[results.length - 1];
 
@@ -62,7 +63,7 @@ const Contact = ({
             className="rounded-xl w-10 h-10 inline-block"
           />
           {isIdIncluded ? (
-            <span className=" bg-green-400 w-[10px] h-[10px] mt-6 -ml-2 mr-3 rounded-full inline-block"></span>
+            <span className="bg-green-400 w-[10px] h-[10px] mt-6 -ml-2 mr-3 rounded-full inline-block"></span>
           ) : (
             <span className="w-[10px] h-[10px] -ml-2 mr-3 inline-block"></span>
           )}
@@ -75,7 +76,7 @@ const Contact = ({
             >
               {lastM
                 ? lastM.msg.text.slice(0, 15)
-                : lastMessage && lastMessage.text.slice(0, 15)}
+                : lastMessage && lastMessage?.text?.slice(0, 15)}
             </h1>
           </div>
         </div>

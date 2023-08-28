@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useAddMessageMutation } from "../redux/messageServices";
 import { VscSend } from "react-icons/vsc";
 import EmojiPicker from "emoji-picker-react";
+import axios from "axios";
 
 const SendMessage = ({
   roomId,
@@ -18,12 +19,14 @@ const SendMessage = ({
   const [text, setText] = useState("");
   const [showEmoji, setshowEmoji] = useState(false);
   const [addMessage] = useAddMessageMutation();
+  const [imgData, setimgData] = useState(null);
 
   const handleEmoji = (event) => {
     let message = text;
     message += event.emoji;
     setText(message);
   };
+
   useEffect(() => {
     setText("");
   }, [roomId]);
@@ -44,37 +47,77 @@ const SendMessage = ({
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    try {
-      await addMessage({ text, roomId })
-        .unwrap()
-        .then((fulfilled) => {
-          const data = {
-            ...fulfilled.data,
-            sender: {
-              name: currentUser.name,
-              avater: currentUser.avater,
-            },
-          };
-          socket.emit("send-msg", {
-            to: currentChat.otherUserId,
-            from: currentUser.id,
-            msg: data,
+
+    if (imgData === null) {
+      try {
+        await addMessage({ text, roomId })
+          .unwrap()
+          .then((fulfilled) => {
+            const data = {
+              ...fulfilled.data,
+              sender: {
+                name: currentUser.name,
+                avater: currentUser.avater,
+              },
+            };
+            console.log(data);
+            socket.emit("send-msg", {
+              to: currentChat.otherUserId,
+              from: currentUser.id,
+              msg: data,
+            });
+            const r = data.roomId;
+            setMessages((prev) => ({ ...prev, [r]: [...messages[r], data] }));
+
+            setText("");
+
+            if (finalMessage.length > 0) {
+              let filter = finalMessage.filter((f) => f.id !== roomId);
+              let newArr = [...filter, { id: roomId, msg: data, status: true }];
+              setLastMessage(newArr);
+            } else {
+              setLastMessage([{ id: roomId, msg: data, status: true }]);
+            }
           });
-          const r = data.roomId;
-          setMessages((prev) => ({ ...prev, [r]: [...messages[r], data] }));
-
-          setText("");
-
-          if (finalMessage.length > 0) {
-            let filter = finalMessage.filter((f) => f.id !== roomId);
-            let newArr = [...filter, { id: roomId, msg: data, status: true }];
-            setLastMessage(newArr);
-          } else {
-            setLastMessage([{ id: roomId, msg: data, status: true }]);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const formData = new FormData();
+        formData.append("image", imgData);
+        formData.append("roomId", roomId);
+        formData.append("text", text);
+        const response = await axios.post(
+          `http://localhost:5000/api/message/image`,
+          formData,
+          {
+            headers: {
+              Authorization: "Bearer " + currentUser.token,
+            },
+          },
+        );
+        const img = response.data.data;
+        const data = {
+          ...img,
+          sender: {
+            name: currentUser.name,
+            avater: currentUser.avater,
+          },
+        };
+        console.log(response.data.data);
+        socket.emit("send-msg", {
+          to: currentChat.otherUserId,
+          from: currentUser.id,
+          msg: data,
         });
-    } catch (error) {
-      console.log(error);
+        const r = data.roomId;
+        setMessages((prev) => ({ ...prev, [r]: [...messages[r], data] }));
+        setimgData(null);
+        setText("");
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -109,13 +152,26 @@ const SendMessage = ({
   return (
     <>
       {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
-      <div className="flex justify-between mt-3 w-full mx-auto px-auto self-end">
+      <form
+        className="flex justify-between mt-3 w-full mx-auto px-auto self-end"
+        onSubmit={handleSendMessage}
+        encType="multipart/form-data"
+        accept="image/*"
+      >
+        <input
+          className="p-1 border-2 focus:outline-[#8d6ff8] rounded-lg w-64 shadow-sm"
+          type="file"
+          name="img_url"
+          onChange={(e) => setimgData(e.target.files[0])}
+        />
         <button
+          type="button"
           className="mx-2 text-2xl"
           onClick={() => setshowEmoji(!showEmoji)}
         >
           😀
         </button>
+
         <input
           placeholder="Type here"
           type="text"
@@ -125,15 +181,17 @@ const SendMessage = ({
           onKeyDown={handleTyping}
         />
         <button
-          onClick={handleSendMessage}
+          type="submit"
           className={`bg-[#171E3A] p-2 text-xl rounded-r-xl ${
-            text.length === 0 ? "text-gray-400" : "text-white"
+            text.length === 0 && imgData === null
+              ? "text-gray-400"
+              : "text-white"
           }`}
-          disabled={text.length === 0}
+          disabled={text.length === 0 && imgData === null}
         >
           <VscSend />
         </button>
-      </div>
+      </form>
     </>
   );
 };
