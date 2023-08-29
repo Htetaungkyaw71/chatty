@@ -39,6 +39,19 @@ const Home = ({ socket }) => {
   }, []);
 
   useEffect(() => {
+    const user = loadState();
+    const fetchUsers = async () => {
+      const users = await axios.get("http://localhost:5000/users", {
+        headers: {
+          Authorization: "Bearer " + user.token,
+        },
+      });
+      setUsers(users.data.data);
+    };
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
     if (currentUser) {
       socket.emit("add-user", currentUser.id);
       socket.on("connect", () => {
@@ -56,19 +69,6 @@ const Home = ({ socket }) => {
       socket.on("newUserResponse", (data) => setOnlineUsers(data));
     }
   }, [socket, onlineUsers]);
-
-  useEffect(() => {
-    const user = loadState();
-    const fetchUsers = async () => {
-      const users = await axios.get("http://localhost:5000/users", {
-        headers: {
-          Authorization: "Bearer " + user.token,
-        },
-      });
-      setUsers(users.data.data);
-    };
-    fetchUsers();
-  }, []);
 
   useEffect(() => {
     if (search.length === 0) {

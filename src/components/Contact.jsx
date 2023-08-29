@@ -54,6 +54,8 @@ const Contact = ({
 
   const lastM = finalMessage && finalMessage.find((m) => m.id === roomId);
 
+  console.log(lastM);
+
   return (
     <div className="mt-3 p-3 rounded-xl hover:bg-[#171E3A]">
       <div className="flex items-center justify-between">
@@ -75,7 +77,9 @@ const Contact = ({
               }`}
             >
               {lastM
-                ? lastM.msg.text.slice(0, 15)
+                ? lastM.msg.image
+                  ? "image"
+                  : lastM.msg.text.slice(0, 15)
                 : lastMessage && lastMessage?.text?.slice(0, 15)}
             </h1>
           </div>

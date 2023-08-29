@@ -5,6 +5,8 @@ import { useAddMessageMutation } from "../redux/messageServices";
 import { VscSend } from "react-icons/vsc";
 import EmojiPicker from "emoji-picker-react";
 import axios from "axios";
+import { BsCardImage } from "react-icons/bs";
+import { RxCrossCircled } from "react-icons/rx";
 
 const SendMessage = ({
   roomId,
@@ -113,6 +115,13 @@ const SendMessage = ({
         });
         const r = data.roomId;
         setMessages((prev) => ({ ...prev, [r]: [...messages[r], data] }));
+        if (finalMessage.length > 0) {
+          let filter = finalMessage.filter((f) => f.id !== roomId);
+          let newArr = [...filter, { id: roomId, msg: data, status: true }];
+          setLastMessage(newArr);
+        } else {
+          setLastMessage([{ id: roomId, msg: data, status: true }]);
+        }
         setimgData(null);
         setText("");
       } catch (error) {
@@ -125,7 +134,6 @@ const SendMessage = ({
     if (socket) {
       const socketRef = socket;
       socketRef.on("msg-recieve", (msg) => {
-        console.log("msg", msg);
         setMessages((prevMessages) => ({
           ...prevMessages,
           [msg.roomId]: [...prevMessages[msg.roomId], msg],
@@ -151,6 +159,18 @@ const SendMessage = ({
 
   return (
     <>
+      {imgData && (
+        <div>
+          <button onClick={() => setimgData("")} className="ml-[50px]">
+            <RxCrossCircled />
+          </button>
+          <img
+            src={imgData ? URL.createObjectURL(imgData) : ""}
+            className="w-16 h-20"
+          />
+        </div>
+      )}
+
       {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
       <form
         className="flex justify-between mt-3 w-full mx-auto px-auto self-end"
@@ -158,12 +178,15 @@ const SendMessage = ({
         encType="multipart/form-data"
         accept="image/*"
       >
-        <input
-          className="p-1 border-2 focus:outline-[#8d6ff8] rounded-lg w-64 shadow-sm"
-          type="file"
-          name="img_url"
-          onChange={(e) => setimgData(e.target.files[0])}
-        />
+        <BsCardImage id="imageCard" alt="Image" className="img-icon" />
+        <label className="upload-button">
+          <input
+            className="hidden"
+            type="file"
+            name="img_url"
+            onChange={(e) => setimgData(e.target.files[0])}
+          />
+        </label>
         <button
           type="button"
           className="mx-2 text-2xl"
@@ -183,11 +206,11 @@ const SendMessage = ({
         <button
           type="submit"
           className={`bg-[#171E3A] p-2 text-xl rounded-r-xl ${
-            text.length === 0 && imgData === null
+            text.length === 0 && (imgData === null || imgData === "")
               ? "text-gray-400"
               : "text-white"
           }`}
-          disabled={text.length === 0 && imgData === null}
+          disabled={text.length === 0 && (imgData === null || imgData === "")}
         >
           <VscSend />
         </button>
