@@ -56,10 +56,10 @@ const Home = ({ socket }) => {
       socket.emit("add-user", currentUser.id);
       socket.on("connect", () => {
         console.log("Socket connected:", socket.id);
-      });
-      socket.emit("newUser", {
-        id: currentUser.id,
-        socketID: socket.id,
+        socket.emit("newUser", {
+          id: currentUser.id,
+          socketID: socket.id,
+        });
       });
     }
   }, [currentUser, socket]);
