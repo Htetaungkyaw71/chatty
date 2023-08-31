@@ -46,6 +46,42 @@ body {
   animation: flash 0.5s ease-out infinite alternate;
 }
 
+.modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Modal Content/Box */
+.modal-content {
+  /* background-color: #1e2746; */
+  text-align: center;
+  margin: 10% auto;
+  padding: 20px;
+  width: 40%;
+  border-radius: 20px;
+}
+
+@media screen and (max-width: 968px) {
+  .modal-content {
+    margin: 20% auto;
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 568px) {
+  .modal-content {
+    margin: 40% auto;
+    width: 80%;
+  }
+}
+
 @keyframes flash {
   0% {
     background-color: #585d6d;
@@ -106,43 +142,6 @@ body {
   scrollbar-color: #f1f1f1 #171e3a;
 }
 
-/* Message Loader */
-
-/* .mloader {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-left: 20px;
-  background-color: #fff;
-  animation: animloader 1s linear infinite alternate;
-}
-
-@keyframes animloader {
-  0% {
-    box-shadow:
-      -20px -6px,
-      -10px 0,
-      10px 0;
-  }
-  33% {
-    box-shadow:
-      -20px 0px,
-      -10px -6px,
-      10px 0;
-  }
-  66% {
-    box-shadow:
-      -20px 0px,
-      -10px 0,
-      10px -6px;
-  }
-  100% {
-    box-shadow:
-      -20px 0,
-      -10px 0,
-      10px 0;
-  }
-} */
 .mloader {
   display: flex;
   align-items: center;

@@ -39,7 +39,7 @@ const Contact = ({
     createRoom(contact.otherUserId);
 
     const getUser = allusers.find((user) => user.id === contact.otherUserId);
-    setAvatar(getUser.avater);
+    setAvatar(getUser?.avater ?? "");
   }, []);
 
   if (isLoading) {

@@ -9,6 +9,8 @@ import {
   useUpdateMessageMutation,
 } from "../redux/messageServices";
 import EmojiPicker from "emoji-picker-react";
+import Modal from "./Modal";
+import { RxCross2 } from "react-icons/rx";
 
 const Message = ({
   message,
@@ -26,6 +28,7 @@ const Message = ({
   const [messageText, setMessageText] = useState(message.text);
   const [upateMessage] = useUpdateMessageMutation();
   const [showEmoji, setshowEmoji] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleEmoji = (event) => {
     let message = messageText;
@@ -199,12 +202,31 @@ const Message = ({
             ) : (
               <>
                 {message.image && (
-                  <img
-                    src={message.image}
-                    className="w-32 h-40 inline-block rounded-xl mb-2"
-                  />
+                  <button onClick={() => setOpen(!open)}>
+                    <img
+                      src={message.image}
+                      className="w-32 h-40 inline-block rounded-xl mb-2"
+                    />
+                  </button>
                 )}
                 <h1>{message.text}</h1>
+                {open && (
+                  <Modal>
+                    <div id="myModal" className="modal">
+                      <div className=" mt-7 mr-7 text-right">
+                        <button onClick={() => setOpen(false)}>
+                          <RxCross2 className="text-3xl text-white" />
+                        </button>
+                      </div>
+                      <div className="modal-content">
+                        <img
+                          src={message.image}
+                          className="w-96 h-80 inline-block rounded-xl mb-2"
+                        />
+                      </div>
+                    </div>
+                  </Modal>
+                )}
               </>
             )}
             {showEmoji && <EmojiPicker onEmojiClick={handleEmoji} />}
@@ -241,10 +263,29 @@ const Message = ({
           </div>
           <div className="text-[16px] text-gray-300">{message.text}</div>
           {message.image && (
-            <img
-              src={message.image}
-              className="w-32 h-40 inline-block rounded-xl mb-2"
-            />
+            <button onClick={() => setOpen(!open)}>
+              <img
+                src={message.image}
+                className="w-32 h-40 inline-block rounded-xl mb-2"
+              />
+            </button>
+          )}
+          {open && (
+            <Modal>
+              <div id="myModal" className="modal">
+                <div className=" mt-7 mr-7 text-right">
+                  <button onClick={() => setOpen(false)}>
+                    <RxCross2 className="text-3xl text-white" />
+                  </button>
+                </div>
+                <div className="modal-content">
+                  <img
+                    src={message.image}
+                    className="w-96 h-80 inline-block rounded-xl mb-2"
+                  />
+                </div>
+              </div>
+            </Modal>
           )}
         </div>
       )}
