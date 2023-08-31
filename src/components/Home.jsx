@@ -12,6 +12,7 @@ import MainLoader from "./helper/MainLoader";
 import Profile from "./Profile";
 import Results from "./Results";
 import { RxHamburgerMenu } from "react-icons/rx";
+import Suggest from "./Suggest";
 
 const Home = ({ socket }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -26,6 +27,7 @@ const Home = ({ socket }) => {
   const [finalMessage, setLastMessage] = useState([]);
   const [toogle, setToogle] = useState(false);
   const [profile, setProfile] = useState(false);
+  const [suggest, setSuggest] = useState(false);
   const [box, setBox] = useState(false);
   const [rooms, setRooms] = useState([]);
 
@@ -131,6 +133,13 @@ const Home = ({ socket }) => {
     setProfile(true);
   };
 
+  const handleSuggest = (e) => {
+    e.preventDefault();
+    setToogle(false);
+    setProfile(false);
+    setSuggest(true);
+  };
+
   return (
     <div className="text-white">
       <Navbar />
@@ -139,6 +148,14 @@ const Home = ({ socket }) => {
           <Profile
             currentUser={currentUser && currentUser}
             setProfile={setProfile}
+          />
+        ) : suggest ? (
+          <Suggest
+            setProfile={setProfile}
+            setSuggest={setSuggest}
+            allusers={allusers}
+            contacts={contacts}
+            currentUser={currentUser}
           />
         ) : (
           <div
@@ -169,8 +186,11 @@ const Home = ({ socket }) => {
                 <button className="block p-2 hover:bg-[#1E2746] rounded-xl mt-1 pl-3 w-full text-left">
                   Settings
                 </button>
-                <button className="block p-2 hover:bg-[#1E2746] rounded-xl mt-1 pl-3 w-full text-left">
-                  Features
+                <button
+                  className="block p-2 hover:bg-[#1E2746] rounded-xl mt-1 pl-3 w-full text-left"
+                  onClick={handleSuggest}
+                >
+                  Suggestions
                 </button>
                 <button className="block p-2 hover:bg-[#1E2746] rounded-xl mt-1 pl-3 mb-1 w-full text-left">
                   Report Bugs
