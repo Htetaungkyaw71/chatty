@@ -30,6 +30,7 @@ const Home = ({ socket }) => {
   const [suggest, setSuggest] = useState(false);
   const [box, setBox] = useState(false);
   const [rooms, setRooms] = useState([]);
+  const [lastdata, setLastdata] = useState(undefined);
 
   useEffect(() => {
     const user = loadState();
@@ -39,6 +40,23 @@ const Home = ({ socket }) => {
     }
     refetch();
   }, []);
+
+  useEffect(() => {
+    if (socket) {
+      const socketRef = socket;
+      socketRef.on("msg-recieve", (msg) => {
+        const message = {
+          ...msg,
+          status: false,
+        };
+        setLastdata(message);
+      });
+
+      return () => {
+        socketRef.off("msg-recieve");
+      };
+    }
+  }, [roomId, socket, setLastdata]);
 
   useEffect(() => {
     const user = loadState();
@@ -120,6 +138,10 @@ const Home = ({ socket }) => {
         return (f.status = true);
       }
     });
+    if (rId.roomId === lastdata.roomId) {
+      lastdata.status = true;
+      setLastdata(lastdata);
+    }
   };
 
   const handleHamburger = (e) => {
@@ -220,6 +242,8 @@ const Home = ({ socket }) => {
                       finalMessage={finalMessage}
                       setRooms={setRooms}
                       allusers={allusers}
+                      socket={socket}
+                      lastdata={lastdata}
                     />
                   </button>
                 ))}

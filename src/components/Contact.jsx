@@ -11,13 +11,14 @@ const Contact = ({
   finalMessage,
   setRooms,
   allusers,
+  lastdata,
 }) => {
   const [roomId, setroomId] = useState(undefined);
   const { data, isLoading } = useGetAllMessageQuery({ roomId });
   const [avatar, setAvatar] = useState("");
 
   useEffect(() => {
-    const createRoom = async (otherUserId) => {
+    const createChatRoom = async (otherUserId) => {
       try {
         const response = await fetch("http://localhost:5000/api/createroom", {
           method: "POST",
@@ -32,29 +33,36 @@ const Contact = ({
         const roomId = data.roomId;
         setRooms((prev) => [...prev, { id: otherUserId, roomId }]);
         setroomId(roomId);
+
+        const getUser = allusers.find(
+          (user) => user.id === contact.otherUserId,
+        );
+        setAvatar(getUser?.avater ?? "");
       } catch (error) {
         console.error(error);
       }
     };
-    createRoom(contact.otherUserId);
 
-    const getUser = allusers.find((user) => user.id === contact.otherUserId);
-    setAvatar(getUser?.avater ?? "");
+    createChatRoom(contact.otherUserId);
   }, []);
 
   if (isLoading) {
     return;
   }
 
+  lastdata = lastdata?.roomId === roomId && lastdata;
+
   const results = data.data;
-  const lastMessage = results[results.length - 1];
+  const lastMessage = results[results?.length - 1];
 
   const isIdIncluded =
     onlineUsers && onlineUsers.some((obj) => obj.id === contact.otherUserId);
 
   const lastM = finalMessage && finalMessage.find((m) => m.id === roomId);
 
-  console.log(lastM);
+  console.log("lastM", lastM);
+
+  console.log("lastdata", lastdata);
 
   return (
     <div className="mt-3 p-3 rounded-xl hover:bg-[#171E3A]">
@@ -73,13 +81,19 @@ const Contact = ({
             <h1 className="flex items-center">{contact.otherUserName}</h1>
             <h1
               className={`text-gray-500 text-left text-sm w-36 ${
-                lastM && !lastM.status && "text-white"
+                lastM
+                  ? !lastM.status && "text-white"
+                  : lastdata && !lastdata.status && "text-white"
               }`}
             >
               {lastM
                 ? lastM.msg.image
                   ? "image"
                   : lastM.msg.text.slice(0, 15)
+                : lastdata
+                ? lastdata?.image
+                  ? "image"
+                  : lastdata?.text.slice(0, 15)
                 : lastMessage && lastMessage?.text?.slice(0, 15)}
             </h1>
           </div>

@@ -49,8 +49,6 @@ const SendMessage = ({
     }, 2000);
   };
 
-  console.log(roomId);
-
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
@@ -132,15 +130,6 @@ const SendMessage = ({
     }
   };
 
-  function updateObjectById(array, idToUpdate, newProps) {
-    return array.map((item) => {
-      if (item.id === idToUpdate) {
-        return { ...item, ...newProps };
-      }
-      return item;
-    });
-  }
-
   useEffect(() => {
     const updateMsg = async (id) => {
       try {
@@ -160,7 +149,7 @@ const SendMessage = ({
           ...msg,
           indicator: "received",
         };
-        updateMsg(message.id);
+        updateMsg(message.roomId);
 
         setMessages((prevMessages) => ({
           ...prevMessages,
@@ -170,7 +159,6 @@ const SendMessage = ({
         if (finalMessage.length > 0) {
           let newArr;
           let filter = finalMessage.filter((f) => f.id !== msg.roomId);
-          console.log(roomId);
           newArr = [...filter, { id: msg.roomId, msg, status: false }];
 
           setLastMessage(newArr);
