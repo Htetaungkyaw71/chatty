@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState, useRef } from "react";
-import { useAddMessageMutation } from "../redux/messageServices";
+import {
+  useAddMessageMutation,
+  useUpdateIndicatorMutation,
+} from "../redux/messageServices";
 import { VscSend } from "react-icons/vsc";
 import EmojiPicker from "emoji-picker-react";
 import axios from "axios";
@@ -22,6 +25,7 @@ const SendMessage = ({
   const [showEmoji, setshowEmoji] = useState(false);
   const [addMessage] = useAddMessageMutation();
   const [imgData, setimgData] = useState(null);
+  const [updateIndicator] = useUpdateIndicatorMutation();
 
   const handleEmoji = (event) => {
     let message = text;
@@ -62,7 +66,6 @@ const SendMessage = ({
                 avater: currentUser.avater,
               },
             };
-            console.log(data);
             socket.emit("send-msg", {
               to: currentChat.otherUserId,
               from: currentUser.id,
@@ -107,7 +110,6 @@ const SendMessage = ({
             avater: currentUser.avater,
           },
         };
-        console.log(response.data.data);
         socket.emit("send-msg", {
           to: currentChat.otherUserId,
           from: currentUser.id,
@@ -130,13 +132,39 @@ const SendMessage = ({
     }
   };
 
+  function updateObjectById(array, idToUpdate, newProps) {
+    return array.map((item) => {
+      if (item.id === idToUpdate) {
+        return { ...item, ...newProps };
+      }
+      return item;
+    });
+  }
+
   useEffect(() => {
+    const updateMsg = async (id) => {
+      try {
+        await updateIndicator({ id })
+          .unwrap()
+          .then((fulfilled) => {
+            console.log(fulfilled);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
     if (socket) {
       const socketRef = socket;
       socketRef.on("msg-recieve", (msg) => {
+        const message = {
+          ...msg,
+          indicator: "received",
+        };
+        updateMsg(message.id);
+
         setMessages((prevMessages) => ({
           ...prevMessages,
-          [msg.roomId]: [...prevMessages[msg.roomId], msg],
+          [msg.roomId]: [...prevMessages[msg.roomId], message],
         }));
 
         if (finalMessage.length > 0) {
@@ -155,7 +183,17 @@ const SendMessage = ({
         socketRef.off("msg-recieve");
       };
     }
-  }, [socket, setMessages]);
+  }, [
+    socket,
+    setMessages,
+    currentChat.otherUserId,
+    currentUser.id,
+    finalMessage,
+    roomId,
+    setLastMessage,
+    messages,
+    updateIndicator,
+  ]);
 
   return (
     <>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { formatDateAndTime } from "./helper/date";
 import { AiOutlineEdit } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
+import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
 import {
   useDeleteMessageMutation,
   useUpdateMessageMutation,
@@ -250,6 +251,14 @@ const Message = ({
 
             <div className="text-sm text-gray-500 ">
               {formatDateAndTime(message.createdAt)}
+              <div className="inline-block ml-1">
+                {message.indicator === "sent" && (
+                  <IoCheckmarkSharp className="text-green-500 inline-block" />
+                )}
+                {message.indicator === "received" && (
+                  <IoCheckmarkDoneSharp className="text-green-500 inline-block" />
+                )}
+              </div>
             </div>
           </div>
         </>

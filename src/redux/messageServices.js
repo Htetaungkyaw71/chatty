@@ -27,13 +27,6 @@ export const messageServices = createApi({
       }),
       transformResponse: (response) => response,
     }),
-    deleteMessage: builder.mutation({
-      query: ({ id }) => ({
-        url: `message/${id}`,
-        method: "DELETE",
-      }),
-      transformResponse: (response) => response,
-    }),
     updateMessage: builder.mutation({
       query: ({ id, text }) => ({
         url: `message/${id}`,
@@ -41,6 +34,20 @@ export const messageServices = createApi({
         body: {
           text,
         },
+      }),
+      transformResponse: (response) => response,
+    }),
+    deleteMessage: builder.mutation({
+      query: ({ id }) => ({
+        url: `message/${id}`,
+        method: "DELETE",
+      }),
+      transformResponse: (response) => response,
+    }),
+    updateIndicator: builder.mutation({
+      query: ({ id }) => ({
+        url: `indicator/${id}`,
+        method: "PUT",
       }),
       transformResponse: (response) => response,
     }),
@@ -52,4 +59,5 @@ export const {
   useAddMessageMutation,
   useDeleteMessageMutation,
   useUpdateMessageMutation,
+  useUpdateIndicatorMutation,
 } = messageServices;
