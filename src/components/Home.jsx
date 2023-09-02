@@ -170,6 +170,7 @@ const Home = ({ socket }) => {
           <Profile
             currentUser={currentUser && currentUser}
             setProfile={setProfile}
+            setcurrentUser={setcurrentUser}
           />
         ) : suggest ? (
           <Suggest
