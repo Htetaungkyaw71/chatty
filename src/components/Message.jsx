@@ -12,6 +12,8 @@ import {
 import EmojiPicker from "emoji-picker-react";
 import Modal from "./Modal";
 import { RxCross2 } from "react-icons/rx";
+import axios from "axios";
+import { loadState } from "../redux/localstorage";
 
 const Message = ({
   message,
@@ -30,6 +32,9 @@ const Message = ({
   const [upateMessage] = useUpdateMessageMutation();
   const [showEmoji, setshowEmoji] = useState(false);
   const [open, setOpen] = useState(false);
+  const [emojiObj, setemojiObj] = useState({
+    [message.id]: message.emoji || "",
+  });
 
   const handleEmoji = (event) => {
     let message = messageText;
@@ -149,6 +154,47 @@ const Message = ({
     }
   };
 
+  const handleUpdateEmoji = async (emoji, message) => {
+    const user = loadState();
+    try {
+      if (emojiObj[message.id] === emoji) {
+        const updateEmoji = await axios.put(
+          `http://localhost:5000/api/emoji/${message.id}`,
+          {
+            emoji: "",
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + user.token,
+            },
+          },
+        );
+        setemojiObj((prev) => ({
+          ...prev,
+          [message.id]: updateEmoji.data.data.emoji,
+        }));
+      } else {
+        const updateEmoji = await axios.put(
+          `http://localhost:5000/api/emoji/${message.id}`,
+          {
+            emoji,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + user.token,
+            },
+          },
+        );
+        setemojiObj((prev) => ({
+          ...prev,
+          [message.id]: updateEmoji.data.data.emoji,
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div
       key={message.id}
@@ -210,7 +256,10 @@ const Message = ({
                     />
                   </button>
                 )}
-                <h1>{message.text}</h1>
+                <h1>
+                  {message.text}
+                  {emojiObj[message.id]?.length > 0 ? emojiObj[message.id] : ""}
+                </h1>
                 {open && (
                   <Modal>
                     <div id="myModal" className="modal">
@@ -263,14 +312,67 @@ const Message = ({
           </div>
         </>
       ) : (
-        <div className="text-left">
+        <div
+          className="text-left"
+          onMouseEnter={() => handleMouseEnter(message.id)}
+          onMouseLeave={handleMouseLeave}
+        >
           <div className="text-[18px]">
             {message.sender.name}
             <span className="text-sm text-gray-500 font-medium ml-3">
               {formatDateAndTime(message.createdAt)}
             </span>
           </div>
-          <div className="text-[16px] text-gray-300">{message.text}</div>
+          {isHovered === message.id && (
+            <div className="flex bg-white text-gray-500 items-center  shadow-lg absolute  mt-5 mr-2  rounded-xl">
+              <button
+                className="p-2 text-center hover:bg-gray-300 w-full rounded-l-xl"
+                onClick={() => handleUpdateEmoji("👍", message)}
+              >
+                👍
+              </button>
+              <hr />
+              <button
+                className="p-2 text-center hover:bg-gray-300 w-full"
+                onClick={() => handleUpdateEmoji("❤️", message)}
+              >
+                ❤️
+              </button>
+              <hr />
+              <button
+                className="p-2 text-center hover:bg-gray-300 w-full"
+                onClick={() => handleUpdateEmoji("😂", message)}
+              >
+                😂
+              </button>
+              <hr />
+              <button
+                className="p-2 text-center hover:bg-gray-300 w-full"
+                onClick={() => handleUpdateEmoji("😮", message)}
+              >
+                😮
+              </button>
+              <hr />
+              <button
+                className="p-2 text-center hover:bg-gray-300 w-full"
+                onClick={() => handleUpdateEmoji("😭", message)}
+              >
+                😭
+              </button>
+              <hr />
+              <button
+                className="p-2 text-center hover:bg-gray-300 w-full rounded-r-xl"
+                onClick={() => handleUpdateEmoji("😡", message)}
+              >
+                😡
+              </button>
+            </div>
+          )}
+          <div className="text-[16px] text-gray-300">
+            {message.text}{" "}
+            {emojiObj[message.id]?.length > 0 ? emojiObj[message.id] : ""}
+          </div>
+
           {message.image && (
             <button onClick={() => setOpen(!open)}>
               <img

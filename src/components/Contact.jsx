@@ -48,6 +48,7 @@ const Contact = ({
 
     createChatRoom(contact.otherUserId);
   }, []);
+  console.log(data);
 
   if (isLoading) {
     return;

@@ -138,9 +138,11 @@ const Home = ({ socket }) => {
         return (f.status = true);
       }
     });
-    if (rId.roomId === lastdata.roomId) {
-      lastdata.status = true;
-      setLastdata(lastdata);
+    if (lastdata) {
+      if (rId.roomId === lastdata?.roomId) {
+        lastdata.status = true;
+        setLastdata(lastdata);
+      }
     }
   };
 

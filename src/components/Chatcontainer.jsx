@@ -41,16 +41,17 @@ const Chatcontainer = ({
   useEffect(() => {
     typeMessage.current?.scrollIntoView({ behavior: "smooth" });
   }, [typingStatus]);
-
   useEffect(() => {
+    recall();
+
     if (roomId && data) {
-      recall();
       setMessagesData((prev) => ({
         ...prev,
         [roomId]: data.data,
       }));
     }
-  }, [roomId, data]);
+    console.log("messagesData", messagesData);
+  }, [roomId, data, recall]);
 
   useEffect(() => {
     const lastMessage = chatContainerRef.current.querySelector(
