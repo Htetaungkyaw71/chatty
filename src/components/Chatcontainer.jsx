@@ -8,6 +8,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Message from "./Message";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import SendMessage from "./SendMessage";
+import { BsSearch } from "react-icons/bs";
 
 /* eslint-disable react/prop-types */
 const Chatcontainer = ({
@@ -23,6 +24,9 @@ const Chatcontainer = ({
   setBox,
   box,
   allusers,
+  setShowsearch,
+  showsearch,
+  setMessages,
 }) => {
   const chatContainerRef = useRef(null);
   const [dot, setDot] = useState(false);
@@ -145,6 +149,14 @@ const Chatcontainer = ({
             </div>
 
             <div className="flex items-center gap-4">
+              <button
+                onClick={() => {
+                  setShowsearch(!showsearch);
+                  setMessages(data.data);
+                }}
+              >
+                <BsSearch className="text-xl" />
+              </button>
               <button onClick={() => setDot(!dot)}>
                 <BsThreeDotsVertical className="text-xl" />
               </button>

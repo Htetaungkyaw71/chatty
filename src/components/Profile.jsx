@@ -44,7 +44,6 @@ const Profile = ({ currentUser, setProfile, setcurrentUser }) => {
         user.status = updateStatus.data.data.status;
         localStorage.setItem("data", JSON.stringify(user));
         setcurrentUser(user);
-        console.log(updateStatus.data.data);
         setuStatus(updateStatus.data.data.status);
         setStatus("");
       } catch (error) {

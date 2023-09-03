@@ -11,8 +11,9 @@ import Welcome from "./helper/Welcome";
 import MainLoader from "./helper/MainLoader";
 import Profile from "./Profile";
 import Results from "./Results";
-import { RxHamburgerMenu } from "react-icons/rx";
+import { RxHamburgerMenu, RxCross1 } from "react-icons/rx";
 import Suggest from "./Suggest";
+import { formatDateAndTime } from "./helper/date";
 
 const Home = ({ socket }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -31,6 +32,10 @@ const Home = ({ socket }) => {
   const [box, setBox] = useState(false);
   const [rooms, setRooms] = useState([]);
   const [lastdata, setLastdata] = useState(undefined);
+  const [showsearch, setShowsearch] = useState(false);
+  const [messages, setMessages] = useState(null);
+  const [sresult, setsresult] = useState("");
+  const [msgResult, setmsgResult] = useState([]);
 
   useEffect(() => {
     const user = loadState();
@@ -125,6 +130,20 @@ const Home = ({ socket }) => {
     };
   }, []);
 
+  useEffect(() => {
+    console.log(sresult);
+    if (sresult) {
+      const filter = messages.filter((m) => {
+        const lowerSearch = sresult.toLowerCase();
+        return m.text.toLowerCase().includes(lowerSearch);
+      });
+      setmsgResult(filter);
+    }
+    if (sresult.length === 0) {
+      setmsgResult([]);
+    }
+  }, [sresult]);
+
   if (isLoading) {
     return <MainLoader />;
   }
@@ -186,7 +205,7 @@ const Home = ({ socket }) => {
           <div
             className={`p-3 bg-[#1E2746] rounded-xl shadow-2xl shadow-[#171E3A] ${
               box && "hidden"
-            }`}
+            } ${showsearch && "hidden md:hidden sm:hidden lg:block xl:block"}`}
           >
             <form className="flex items-center gap-3">
               <button onClick={handleHamburger}>
@@ -264,9 +283,11 @@ const Home = ({ socket }) => {
         )}
 
         <div
-          className={`col-span-3 bg-[#1E2746] rounded-xl shadow-2xl text-white p-3 ${
+          className={`${
+            showsearch ? "col-span-2" : "col-span-3"
+          } bg-[#1E2746] rounded-xl shadow-2xl text-white p-3 ${
             box ? "block" : "hidden sm:hidden md:hidden lg:block xl:block"
-          }`}
+          } ${showsearch && "hidden"}`}
         >
           {roomId ? (
             <Chatcontainer
@@ -282,11 +303,60 @@ const Home = ({ socket }) => {
               setBox={setBox}
               box={box}
               allusers={allusers}
+              showsearch={showsearch}
+              setShowsearch={setShowsearch}
+              setMessages={setMessages}
             />
           ) : (
             <Welcome currentUser={currentUser ? currentUser : "Loading"} />
           )}
         </div>
+        {showsearch && (
+          <div className="bg-[#1E2746] rounded-xl shadow-2xl text-white p-3 ">
+            <div className="flex justify-between items-center md:justify-between sm:justify-between lg:justify-around xl:justify-around mt-2">
+              <button
+                onClick={() => setShowsearch(false)}
+                className="hover:bg-[#171E3A] rounded-full p-3"
+              >
+                <RxCross1 className="text-xl" />
+              </button>
+              <div className="p-0">
+                <input
+                  placeholder="Search"
+                  type="text"
+                  className="p-2 rounded-xl bg-[#171E3A] outline-none w-full"
+                  onChange={(e) => setsresult(e.target.value)}
+                  value={sresult}
+                />
+              </div>
+            </div>
+            <div className="mt-3 h-[70vh] chat-scroll ">
+              <h1 className="mb-5">Search for messages</h1>
+              {msgResult.length > 0 &&
+                msgResult.map((msg) => (
+                  <div key={msg.id} className="pr-3">
+                    {msg.sender.id !== currentUser.id ? (
+                      <div className="text-left mb-3">
+                        <h1>{msg.sender.name}</h1>
+                        <p className="text-gray-400">{msg.text}</p>
+                        <p className="text-gray-500 text-sm">
+                          {formatDateAndTime(msg.createdAt)}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-right mb-3 ">
+                        <h1>{currentUser.name}</h1>
+                        <p className="text-gray-400">{msg.text}</p>
+                        <p className="text-gray-500 text-sm">
+                          {formatDateAndTime(msg.createdAt)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
