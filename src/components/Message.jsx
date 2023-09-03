@@ -169,6 +169,13 @@ const Message = ({
             },
           },
         );
+
+        socket.emit("send-emoji", {
+          to: currentChat.otherUserId,
+          from: currentUser.id,
+          msg: updateEmoji.data.data,
+        });
+
         setemojiObj((prev) => ({
           ...prev,
           [message.id]: updateEmoji.data.data.emoji,
@@ -185,6 +192,11 @@ const Message = ({
             },
           },
         );
+        socket.emit("send-emoji", {
+          to: currentChat.otherUserId,
+          from: currentUser.id,
+          msg: updateEmoji.data.data,
+        });
         setemojiObj((prev) => ({
           ...prev,
           [message.id]: updateEmoji.data.data.emoji,
@@ -194,6 +206,22 @@ const Message = ({
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (socket) {
+      const socketRef = socket;
+      socketRef.on("emoji-recieve", (msg) => {
+        setemojiObj((prev) => ({
+          ...prev,
+          [msg.id]: msg.emoji,
+        }));
+
+        return () => {
+          socketRef.off("emoji-recieve");
+        };
+      });
+    }
+  }, [socket]);
 
   return (
     <div
@@ -258,7 +286,11 @@ const Message = ({
                 )}
                 <h1>
                   {message.text}
-                  {emojiObj[message.id]?.length > 0 ? emojiObj[message.id] : ""}
+                  <div>
+                    {emojiObj[message.id]?.length > 0
+                      ? emojiObj[message.id]
+                      : ""}
+                  </div>
                 </h1>
                 {open && (
                   <Modal>
@@ -317,14 +349,8 @@ const Message = ({
           onMouseEnter={() => handleMouseEnter(message.id)}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="text-[18px]">
-            {message.sender.name}
-            <span className="text-sm text-gray-500 font-medium ml-3">
-              {formatDateAndTime(message.createdAt)}
-            </span>
-          </div>
           {isHovered === message.id && (
-            <div className="flex bg-white text-gray-500 items-center  shadow-lg absolute  mt-5 mr-2  rounded-xl">
+            <div className="flex bg-white text-gray-500 items-center shadow-lg absolute  -mt-4 mr-2  rounded-xl">
               <button
                 className="p-2 text-center hover:bg-gray-300 w-full rounded-l-xl"
                 onClick={() => handleUpdateEmoji("👍", message)}
@@ -368,9 +394,18 @@ const Message = ({
               </button>
             </div>
           )}
+          <div className="text-[18px]">
+            {message.sender.name}
+            <span className="text-sm text-gray-500 font-medium ml-3">
+              {formatDateAndTime(message.createdAt)}
+            </span>
+          </div>
+
           <div className="text-[16px] text-gray-300">
             {message.text}{" "}
-            {emojiObj[message.id]?.length > 0 ? emojiObj[message.id] : ""}
+            <div>
+              {emojiObj[message.id]?.length > 0 ? emojiObj[message.id] : ""}
+            </div>
           </div>
 
           {message.image && (
