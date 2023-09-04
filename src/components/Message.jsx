@@ -229,7 +229,7 @@ const Message = ({
       className={
         message.senderId === currentUser.id
           ? "block text-left mt-5 "
-          : "flex gap-2 mt-5"
+          : "flex items-start gap-2 mt-5"
       }
     >
       {message.senderId !== currentUser.id && (
@@ -237,7 +237,7 @@ const Message = ({
           <img
             src={`data:image/svg+xml;base64,${message.sender.avater}`}
             alt="Sender Avatar"
-            className="rounded-xl w-10 h-10"
+            className={`rounded-xl min-w-[40px] min-h-[40px]`}
           />
           {isIdIncluded && (
             <span className="bg-green-400 w-[10px] h-[10px] mt-[26px] -ml-2 mr-[2px] inline-block rounded-full"></span>
@@ -349,8 +349,20 @@ const Message = ({
           onMouseEnter={() => handleMouseEnter(message.id)}
           onMouseLeave={handleMouseLeave}
         >
+          <div className="text-[18px]">
+            {message.sender.name}
+            <span className="text-sm text-gray-500 font-medium ml-3">
+              {formatDateAndTime(message.createdAt)}
+            </span>
+          </div>
+          <div className="text-[16px] text-gray-300">
+            {message.text}{" "}
+            <div>
+              {emojiObj[message.id]?.length > 0 ? emojiObj[message.id] : ""}
+            </div>
+          </div>
           {isHovered === message.id && (
-            <div className="flex bg-white text-gray-500 items-center shadow-lg absolute  -mt-4 mr-2  rounded-xl">
+            <div className=" bg-white text-gray-500 items-center shadow-lg flex w-64 mr-2  rounded-xl">
               <button
                 className="p-2 text-center hover:bg-gray-300 w-full rounded-l-xl"
                 onClick={() => handleUpdateEmoji("👍", message)}
@@ -394,19 +406,6 @@ const Message = ({
               </button>
             </div>
           )}
-          <div className="text-[18px]">
-            {message.sender.name}
-            <span className="text-sm text-gray-500 font-medium ml-3">
-              {formatDateAndTime(message.createdAt)}
-            </span>
-          </div>
-
-          <div className="text-[16px] text-gray-300">
-            {message.text}{" "}
-            <div>
-              {emojiObj[message.id]?.length > 0 ? emojiObj[message.id] : ""}
-            </div>
-          </div>
 
           {message.image && (
             <button onClick={() => setOpen(!open)}>

@@ -66,12 +66,16 @@ const Home = ({ socket }) => {
   useEffect(() => {
     const user = loadState();
     const fetchUsers = async () => {
-      const users = await axios.get("http://localhost:5000/users", {
-        headers: {
-          Authorization: "Bearer " + user.token,
-        },
-      });
-      setUsers(users.data.data);
+      try {
+        const users = await axios.get("http://localhost:5000/users", {
+          headers: {
+            Authorization: "Bearer " + user.token,
+          },
+        });
+        setUsers(users.data.data);
+      } catch (error) {
+        console.log(error);
+      }
     };
     fetchUsers();
   }, []);
