@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import Addcontact from "./Addcontact";
 
-const Results = ({ user, refetch }) => {
+const Results = ({ user, refetch, setSuggest }) => {
   return (
     <div
       key={user.id}
@@ -19,7 +19,7 @@ const Results = ({ user, refetch }) => {
       </div>
 
       <div>
-        <Addcontact user={user} refetch={refetch} />
+        <Addcontact user={user} refetch={refetch} setSuggest={setSuggest} />
       </div>
     </div>
   );

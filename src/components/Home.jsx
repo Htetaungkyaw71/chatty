@@ -204,6 +204,7 @@ const Home = ({ socket }) => {
             allusers={allusers}
             contacts={contacts}
             currentUser={currentUser}
+            refetch={refetch}
           />
         ) : (
           <div

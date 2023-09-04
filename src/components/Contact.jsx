@@ -89,7 +89,7 @@ const Contact = ({
           <div>
             <img
               src={`data:image/svg+xml;base64,${avatar}`}
-              className="rounded-xl w-10 h-10 inline-block"
+              className="rounded-xl  inline-block min-w-[40px] min-h-[40px]"
             />
           </div>
 

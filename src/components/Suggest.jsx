@@ -9,6 +9,7 @@ const Suggest = ({
   allusers,
   currentUser,
   contacts,
+  refetch,
 }) => {
   const [suggests, setsuggestPeople] = useState([]);
   useEffect(() => {
@@ -58,7 +59,7 @@ const Suggest = ({
         <h1 className="text-center text-lg">Contact Suggestions</h1>
         {suggests.map((user) => (
           <div key={user.id} className="w-full">
-            <Results user={user} />
+            <Results user={user} refetch={refetch} setSuggest={setSuggest} />
           </div>
         ))}
       </div>

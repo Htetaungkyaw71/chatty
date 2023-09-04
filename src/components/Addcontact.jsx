@@ -2,7 +2,7 @@
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { useAddContactMutation } from "../redux/contactServices";
 
-const Addcontact = ({ user, refetch }) => {
+const Addcontact = ({ user, refetch, setSuggest }) => {
   const [addContact] = useAddContactMutation();
   const contactUser = {
     otherUserId: user.id,
@@ -19,6 +19,7 @@ const Addcontact = ({ user, refetch }) => {
         .then((fulfilled) => {
           console.log(fulfilled);
           refetch();
+          setSuggest(false);
         });
     } catch (error) {
       console.log(error);

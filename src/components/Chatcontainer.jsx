@@ -113,8 +113,17 @@ const Chatcontainer = ({
   return (
     <div>
       {dot && (
-        <div className="z-10 absolute right-5 bg-white text-[#171E3A] p-3 top-14 rounded-xl ">
-          <button onClick={removeContact}>Remove contact</button>
+        <div
+          className={`bg-[#171E3A]  p-3 w-48 rounded-xl z-10 right-0 mt-14 absolute ${
+            showsearch && "right-80"
+          }`}
+        >
+          <button
+            className="block p-2 hover:bg-[#1E2746] rounded-xl mt-1 pl-3 w-full text-left"
+            onClick={removeContact}
+          >
+            Remove Contact
+          </button>
         </div>
       )}
       {currentChat && (
